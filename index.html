@@ -2,7 +2,7 @@
 <html lang="it">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>TakeAway Manager - Ordina Online</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -10,258 +10,315 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
         }
 
         :root {
-            --primary: #2c3e50;
-            --secondary: #e74c3c;
-            --accent: #f39c12;
-            --bg: #f8f9fa;
-            --text: #333;
-            --border: #dee2e6;
-            --success: #27ae60;
-            --white: #ffffff;
+            --primary: #4299e1;
+            --primary-dark: #2c7fb8;
+            --success: #48bb78;
+            --danger: #f56565;
+            --warning: #ed8936;
+            --purple: #9f7aea;
+            --bg: #f7fafc;
+            --card-bg: #ffffff;
+            --text: #2d3748;
+            --text-light: #718096;
+            --border: #e2e8f0;
+            --shadow: 0 2px 8px rgba(0,0,0,0.1);
+            --shadow-lg: 0 4px 16px rgba(0,0,0,0.15);
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
             background: var(--bg);
             color: var(--text);
             line-height: 1.6;
+            overflow-x: hidden;
+            padding-bottom: 80px;
         }
 
-        /* Header */
+        /* ===== HEADER STICKY ===== */
         .header {
-            background: var(--white);
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
             position: sticky;
             top: 0;
             z-index: 100;
-            padding: 1rem 0;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            padding: 1rem;
+            box-shadow: var(--shadow-lg);
         }
 
-        .header-container {
-            max-width: 1400px;
+        .header-content {
+            max-width: 1200px;
             margin: 0 auto;
-            padding: 0 2rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
 
-        .logo-section h1 {
-            color: var(--primary);
-            font-size: 1.8rem;
-        }
-
-        .logo-section p {
-            color: #666;
-            font-size: 0.9rem;
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1.25rem;
+            font-weight: 700;
         }
 
         .header-actions {
             display: flex;
-            gap: 1rem;
+            gap: 0.75rem;
             align-items: center;
-        }
-
-        .lang-switcher {
-            display: flex;
-            gap: 0.5rem;
         }
 
         .lang-btn {
-            background: none;
-            border: 2px solid var(--border);
-            padding: 0.5rem;
+            background: rgba(255,255,255,0.2);
+            border: none;
+            padding: 0.5rem 0.75rem;
+            border-radius: 8px;
+            color: white;
             cursor: pointer;
-            border-radius: 5px;
-            font-size: 1.2rem;
+            font-size: 1.25rem;
+            transition: all 0.2s;
+        }
+
+        .lang-btn:active {
+            transform: scale(0.95);
+            background: rgba(255,255,255,0.3);
+        }
+
+        .lang-btn.active {
+            background: white;
+            color: var(--primary);
+        }
+
+        /* ===== CART BADGE FLOATING ===== */
+        .cart-badge {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1000;
+            background: var(--success);
+            color: white;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            box-shadow: var(--shadow-lg);
+            cursor: pointer;
             transition: all 0.3s;
         }
 
-        .lang-btn:hover, .lang-btn.active {
-            border-color: var(--primary);
-            background: var(--primary);
-            transform: scale(1.1);
+        .cart-badge:active {
+            transform: scale(0.9);
         }
 
-        .vip-badge {
-            background: linear-gradient(135deg, var(--accent), #e67e22);
+        .cart-badge .badge-count {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: var(--danger);
             color: white;
-            padding: 0.5rem 1rem;
-            border-radius: 25px;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: 700;
+            border: 2px solid white;
+        }
+
+        /* ===== CART SLIDE-IN PANEL ===== */
+        .cart-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 999;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s;
+        }
+
+        .cart-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .cart-panel {
+            position: fixed;
+            top: 0;
+            right: -100%;
+            width: 90%;
+            max-width: 400px;
+            height: 100%;
+            background: white;
+            z-index: 1000;
+            transition: right 0.3s;
+            display: flex;
+            flex-direction: column;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .cart-panel.active {
+            right: 0;
+        }
+
+        .cart-header {
+            padding: 1.5rem;
+            background: var(--primary);
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .cart-header h2 {
+            font-size: 1.25rem;
             display: flex;
             align-items: center;
             gap: 0.5rem;
-            font-size: 0.9rem;
-            cursor: pointer;
         }
 
-        .vip-badge i {
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.2); }
-        }
-
-        /* Hero - Ricetta del Giorno */
-        .hero {
-            background: linear-gradient(135deg, var(--primary), #34495e);
+        .close-cart {
+            background: none;
+            border: none;
             color: white;
-            padding: 3rem 2rem;
-            text-align: center;
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 0.5rem;
         }
 
-        .hero-container {
-            max-width: 1400px;
-            margin: 0 auto;
+        .cart-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1rem;
         }
 
-        .hero h2 {
-            font-size: 2.5rem;
+        .cart-footer {
+            padding: 1.5rem;
+            border-top: 2px solid var(--border);
+            background: var(--bg);
+        }
+
+        .cart-total {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--success);
             margin-bottom: 1rem;
+            display: flex;
+            justify-content: space-between;
         }
 
-        .recipe-card {
-            background: white;
-            color: var(--text);
-            border-radius: 15px;
-            overflow: hidden;
-            max-width: 800px;
-            margin: 2rem auto;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-        }
-
-        .recipe-content {
-            padding: 2rem;
-        }
-
-        .recipe-content h3 {
-            color: var(--secondary);
-            margin-bottom: 1rem;
-            font-size: 1.8rem;
-        }
-
-        .recipe-content p {
-            font-size: 1.1rem;
-            margin-bottom: 1rem;
-        }
-
-        .recipe-price {
-            font-size: 2rem;
-            color: var(--accent);
-            font-weight: bold;
-        }
-
-        /* Main Container */
+        /* ===== MAIN CONTAINER ===== */
         .container {
-            max-width: 1400px;
-            margin: 2rem auto;
-            padding: 0 2rem;
-            display: grid;
-            grid-template-columns: 1fr 400px;
-            gap: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem;
         }
 
-        /* Menu Sections */
-        .menu-section {
-            background: white;
-            padding: 2rem;
-            border-radius: 15px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        /* ===== SECTION ===== */
+        .section {
+            margin-bottom: 2rem;
         }
 
         .section-title {
-            color: var(--primary);
-            font-size: 2rem;
-            margin-bottom: 1.5rem;
-            border-bottom: 3px solid var(--secondary);
-            padding-bottom: 0.5rem;
-        }
-
-        .week-tabs {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
             display: flex;
+            align-items: center;
             gap: 0.5rem;
-            margin-bottom: 1.5rem;
-            overflow-x: auto;
         }
 
-        .week-tab {
-            padding: 0.75rem 1.5rem;
-            background: var(--bg);
-            border: none;
-            border-radius: 25px;
-            cursor: pointer;
-            transition: all 0.3s;
-            white-space: nowrap;
-        }
-
-        .week-tab:hover, .week-tab.active {
-            background: var(--primary);
+        /* ===== HERO RECIPE CARD ===== */
+        .hero-recipe {
+            background: linear-gradient(135deg, var(--purple) 0%, #667eea 100%);
+            border-radius: 16px;
+            padding: 1.5rem;
             color: white;
+            box-shadow: var(--shadow-lg);
+            margin-bottom: 1.5rem;
         }
 
-        .products-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-            gap: 1.5rem;
+        .hero-recipe h3 {
+            font-size: 1.25rem;
+            margin-bottom: 0.5rem;
         }
 
+        .hero-recipe p {
+            opacity: 0.9;
+            margin-bottom: 1rem;
+        }
+
+        .hero-recipe .price {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        /* ===== PRODUCT CARD ===== */
         .product-card {
-            background: white;
-            border: 2px solid var(--border);
-            border-radius: 10px;
-            overflow: hidden;
-            transition: all 0.3s;
-            cursor: pointer;
+            background: var(--card-bg);
+            border-radius: 12px;
             padding: 1rem;
+            margin-bottom: 1rem;
+            box-shadow: var(--shadow);
+            transition: transform 0.2s;
         }
 
-        .product-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 5px 20px rgba(0,0,0,0.15);
-            border-color: var(--primary);
-        }
-
-        .product-info {
-            padding: 1rem;
+        .product-card:active {
+            transform: scale(0.98);
         }
 
         .product-name {
-            font-weight: bold;
-            color: var(--primary);
+            font-size: 1.1rem;
+            font-weight: 600;
             margin-bottom: 0.5rem;
+            color: var(--text);
         }
 
         .product-description {
             font-size: 0.9rem;
-            color: #666;
-            margin-bottom: 0.5rem;
+            color: var(--text-light);
+            margin-bottom: 0.75rem;
+        }
+
+        .product-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
         .product-price {
-            font-size: 1.3rem;
-            color: var(--secondary);
-            font-weight: bold;
-        }
-
-        .product-actions {
-            display: flex;
-            gap: 0.5rem;
-            margin-top: 1rem;
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--success);
         }
 
         .btn {
             padding: 0.75rem 1.5rem;
             border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 1rem;
-            transition: all 0.3s;
+            border-radius: 8px;
             font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 1rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            justify-content: center;
+        }
+
+        .btn:active {
+            transform: scale(0.95);
         }
 
         .btn-primary {
@@ -269,97 +326,111 @@
             color: white;
         }
 
-        .btn-primary:hover {
-            background: #1a252f;
-        }
-
         .btn-success {
             background: var(--success);
             color: white;
-        }
-
-        .btn-success:hover {
-            background: #229954;
-        }
-
-        .btn-secondary {
-            background: var(--secondary);
-            color: white;
-        }
-
-        .btn-secondary:hover {
-            background: #c0392b;
         }
 
         .btn-full {
             width: 100%;
         }
 
-        /* Sidebar - Cart & Booking */
-        .sidebar {
-            position: sticky;
-            top: 100px;
-            height: fit-content;
+        /* ===== WEEK DAY CARD ===== */
+        .week-day {
+            background: var(--card-bg);
+            border-radius: 12px;
+            margin-bottom: 1rem;
+            box-shadow: var(--shadow);
+            overflow: hidden;
         }
 
-        .cart-section, .booking-section {
-            background: white;
-            padding: 1.5rem;
-            border-radius: 15px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            margin-bottom: 1.5rem;
-        }
-
-        .cart-header {
+        .week-day-header {
+            padding: 1rem;
+            background: var(--bg);
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 1rem;
-            padding-bottom: 1rem;
-            border-bottom: 2px solid var(--border);
+            cursor: pointer;
+            user-select: none;
         }
 
-        .cart-header h3 {
-            color: var(--primary);
+        .week-day-header:active {
+            background: var(--border);
         }
 
-        .cart-count {
-            background: var(--secondary);
-            color: white;
-            padding: 0.3rem 0.8rem;
-            border-radius: 20px;
+        .week-day-title {
+            font-weight: 600;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .week-day-count {
+            color: var(--text-light);
             font-size: 0.9rem;
         }
 
-        .cart-items {
-            max-height: 300px;
-            overflow-y: auto;
-            margin-bottom: 1rem;
+        .week-day-icon {
+            transition: transform 0.3s;
         }
 
+        .week-day.expanded .week-day-icon {
+            transform: rotate(180deg);
+        }
+
+        .week-day-body {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s;
+        }
+
+        .week-day.expanded .week-day-body {
+            max-height: 2000px;
+        }
+
+        .week-day-products {
+            padding: 1rem;
+        }
+
+        /* ===== CART ITEM ===== */
         .cart-item {
+            background: var(--bg);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .cart-item-header {
             display: flex;
             justify-content: space-between;
-            align-items: center;
-            padding: 0.75rem;
-            border-bottom: 1px solid var(--border);
-        }
-
-        .cart-item-info {
-            flex: 1;
+            align-items: start;
+            margin-bottom: 0.5rem;
         }
 
         .cart-item-name {
-            font-weight: bold;
-            color: var(--primary);
+            font-weight: 600;
+            flex: 1;
         }
 
-        .cart-item-price {
-            color: var(--secondary);
-            font-size: 0.9rem;
+        .cart-item-remove {
+            background: var(--danger);
+            color: white;
+            border: none;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 0.75rem;
         }
 
-        .cart-item-qty {
+        .cart-item-controls {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .cart-item-quantity {
             display: flex;
             align-items: center;
             gap: 0.5rem;
@@ -369,1367 +440,974 @@
             background: var(--primary);
             color: white;
             border: none;
-            width: 25px;
-            height: 25px;
-            border-radius: 50%;
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
             cursor: pointer;
-            font-weight: bold;
-        }
-
-        .qty-btn:hover {
-            background: var(--secondary);
-        }
-
-        .cart-total {
-            display: flex;
-            justify-content: space-between;
-            padding: 1rem 0;
-            border-top: 2px solid var(--primary);
-            font-size: 1.3rem;
-            font-weight: bold;
-            color: var(--primary);
-        }
-
-        .special-requests {
-            margin-top: 1rem;
-        }
-
-        .special-requests textarea {
-            width: 100%;
-            padding: 0.75rem;
-            border: 2px solid var(--border);
-            border-radius: 5px;
-            resize: vertical;
-            min-height: 80px;
-            font-family: inherit;
-        }
-
-        /* Calendar Picker */
-        .date-picker {
-            margin-bottom: 1rem;
-        }
-
-        .date-picker label {
-            display: block;
-            margin-bottom: 0.5rem;
-            font-weight: bold;
-            color: var(--primary);
-        }
-
-        .date-picker input, .date-picker select {
-            width: 100%;
-            padding: 0.75rem;
-            border: 2px solid var(--border);
-            border-radius: 5px;
             font-size: 1rem;
+            font-weight: 700;
         }
 
-        /* Payment Options */
-        .payment-options {
-            margin: 1.5rem 0;
-        }
-
-        .payment-choice {
-            display: flex;
-            gap: 1rem;
-            margin-bottom: 1rem;
-        }
-
-        .payment-choice button {
-            flex: 1;
-            padding: 1rem;
-            border: 2px solid var(--border);
-            background: white;
-            border-radius: 10px;
-            cursor: pointer;
-            transition: all 0.3s;
-            font-weight: bold;
-        }
-
-        .payment-choice button.active {
-            border-color: var(--success);
-            background: var(--success);
-            color: white;
-        }
-
-        .payment-choice button:hover {
-            border-color: var(--primary);
-        }
-
-        #stripe-payment-element {
-            margin: 1rem 0;
-            padding: 1rem;
-            background: var(--bg);
-            border-radius: 10px;
-        }
-
-        /* Customer Form */
-        .customer-form {
-            margin-top: 1rem;
-        }
-
-        .form-group {
-            margin-bottom: 1rem;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 0.5rem;
-            font-weight: bold;
-            color: var(--primary);
-        }
-
-        .form-group input {
-            width: 100%;
-            padding: 0.75rem;
-            border: 2px solid var(--border);
-            border-radius: 5px;
-            font-size: 1rem;
-        }
-
-        .form-toggle {
+        .qty-value {
+            min-width: 30px;
             text-align: center;
-            margin: 1rem 0;
+            font-weight: 600;
         }
 
-        .form-toggle a {
-            color: var(--primary);
-            text-decoration: none;
-            font-weight: bold;
-        }
-
-        .form-toggle a:hover {
-            color: var(--secondary);
-        }
-
-        .vip-progress {
-            background: var(--bg);
-            padding: 1rem;
-            border-radius: 10px;
-            margin: 1rem 0;
-        }
-
-        .progress-bar {
-            background: var(--border);
-            height: 20px;
-            border-radius: 10px;
-            overflow: hidden;
-            margin: 0.5rem 0;
-        }
-
-        .progress-fill {
-            background: linear-gradient(90deg, var(--accent), #e67e22);
-            height: 100%;
-            transition: width 0.5s;
-        }
-
-        .progress-text {
-            text-align: center;
-            font-size: 0.9rem;
-            color: #666;
-        }
-
-        /* WhatsApp Floating Button */
-        .whatsapp-btn {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background: #25D366;
-            color: white;
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 2rem;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-            cursor: pointer;
-            z-index: 1000;
-            transition: all 0.3s;
-            text-decoration: none;
-        }
-
-        .whatsapp-btn:hover {
-            transform: scale(1.1);
-            box-shadow: 0 6px 20px rgba(0,0,0,0.4);
-        }
-
-        /* Feedback Section */
-        .feedback-section {
-            background: white;
-            padding: 2rem;
-            border-radius: 15px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            margin-top: 2rem;
-        }
-
-        .feedback-section h3 {
-            color: var(--primary);
-            margin-bottom: 1rem;
-        }
-
-        .feedback-form textarea {
-            width: 100%;
-            padding: 1rem;
-            border: 2px solid var(--border);
-            border-radius: 5px;
-            resize: vertical;
-            min-height: 120px;
-            font-family: inherit;
-            margin-bottom: 1rem;
-        }
-
-        .anonymous-toggle {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            margin-bottom: 1rem;
-        }
-
-        /* Order Confirmation Modal */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.7);
-            z-index: 2000;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .modal.active {
-            display: flex;
-        }
-
-        .modal-content {
-            background: white;
-            padding: 2rem;
-            border-radius: 15px;
-            max-width: 500px;
-            text-align: center;
-        }
-
-        .modal-content h2 {
+        .cart-item-price {
+            font-weight: 700;
             color: var(--success);
-            margin-bottom: 1rem;
         }
 
-        .order-number {
-            font-size: 2rem;
-            color: var(--primary);
-            font-weight: bold;
-            margin: 1rem 0;
-        }
-
-        /* Responsive */
-        @media (max-width: 968px) {
-            .container {
-                grid-template-columns: 1fr;
-            }
-
-            .sidebar {
-                position: static;
-            }
-
-            .products-grid {
-                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            }
-        }
-
-        @media (max-width: 640px) {
-            .header-container {
-                flex-direction: column;
-                gap: 1rem;
-            }
-
-            .hero h2 {
-                font-size: 1.8rem;
-            }
-
-            .recipe-card {
-                margin: 1rem;
-            }
-
-            .products-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        .empty-cart {
+        /* ===== EMPTY STATE ===== */
+        .empty-state {
             text-align: center;
-            padding: 2rem;
-            color: #999;
+            padding: 3rem 1rem;
+            color: var(--text-light);
         }
 
+        .empty-state i {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            opacity: 0.3;
+        }
+
+        /* ===== LOADING ===== */
         .loading {
             text-align: center;
             padding: 2rem;
         }
 
         .spinner {
-            border: 4px solid var(--border);
-            border-top: 4px solid var(--primary);
+            border: 3px solid var(--border);
+            border-top-color: var(--primary);
             border-radius: 50%;
             width: 40px;
             height: 40px;
             animation: spin 1s linear infinite;
-            margin: 0 auto;
+            margin: 0 auto 1rem;
         }
 
         @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+            to { transform: rotate(360deg); }
         }
 
-        /* VIP Welcome Message */
-        .vip-welcome {
-            background: linear-gradient(135deg, var(--accent), #e67e22);
-            color: white;
+        /* ===== CHECKOUT MODAL ===== */
+        .checkout-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 2000;
+            display: none;
+            align-items: center;
+            justify-content: center;
             padding: 1rem;
-            border-radius: 10px;
-            margin-bottom: 1rem;
-            text-align: center;
         }
 
-        .vip-welcome i {
-            font-size: 1.5rem;
-            margin-right: 0.5rem;
+        .checkout-modal.active {
+            display: flex;
+        }
+
+        .checkout-content {
+            background: white;
+            border-radius: 16px;
+            width: 100%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .checkout-header {
+            padding: 1.5rem;
+            background: var(--primary);
+            color: white;
+            border-radius: 16px 16px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .checkout-body {
+            padding: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.2s;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .payment-options {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .payment-option {
+            flex: 1;
+            padding: 1rem;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.2s;
+        }
+
+        .payment-option:hover {
+            border-color: var(--primary);
+        }
+
+        .payment-option.selected {
+            border-color: var(--primary);
+            background: var(--primary);
+            color: white;
+        }
+
+        .order-summary {
+            background: var(--bg);
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+        }
+
+        .summary-total {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--success);
+            padding-top: 0.5rem;
+            border-top: 2px solid var(--border);
+            margin-top: 0.5rem;
+        }
+
+        .guest-mode-toggle {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem;
+            background: var(--bg);
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            cursor: pointer;
+        }
+
+        .guest-mode-toggle input {
+            cursor: pointer;
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (min-width: 768px) {
+            .cart-panel {
+                width: 400px;
+            }
+            
+            .products-grid {
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 1rem;
+            }
+            
+            .product-card {
+                margin-bottom: 0;
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .products-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
         }
     </style>
 </head>
 <body>
 
-    <!-- Header -->
+    <!-- HEADER STICKY -->
     <header class="header">
-        <div class="header-container">
-            <div class="logo-section">
-                <h1 id="restaurant-name">Ristorante Demo</h1>
-                <p id="restaurant-tagline">Cucina Italiana Autentica</p>
+        <div class="header-content">
+            <div class="logo">
+                <i class="fas fa-utensils"></i>
+                <span>TakeAway</span>
             </div>
             <div class="header-actions">
-                <div class="lang-switcher">
-                    <button class="lang-btn active" onclick="switchLang('it')">🇮🇹</button>
-                    <button class="lang-btn" onclick="switchLang('de')">🇨🇭</button>
-                    <button class="lang-btn" onclick="switchLang('fr')">🇫🇷</button>
-                </div>
-                <div class="vip-badge" onclick="toggleVIPLogin()">
-                    <i class="fas fa-crown"></i>
-                    <span id="vip-status">Login VIP</span>
-                </div>
+                <button class="lang-btn active" onclick="switchLang('it')">🇮🇹</button>
+                <button class="lang-btn" onclick="switchLang('de')">🇨🇭</button>
+                <button class="lang-btn" onclick="switchLang('fr')">🇫🇷</button>
             </div>
         </div>
     </header>
 
-    <!-- Hero - Ricetta del Giorno -->
-    <!-- Sezione Ricetta RIMOSSA - Solo prodotti dal backend -->
-
-    <!-- Main Container -->
+    <!-- MAIN CONTAINER -->
     <div class="container">
-        <!-- Menu Sections -->
-        <div class="menu-content">
-            <!-- Menu del Giorno -->
-            <section class="menu-section">
-                <h2 class="section-title" id="menu-today-title">📋 Menu del Giorno</h2>
-                <div class="products-grid" id="today-products">
-                    <!-- Products loaded via JS -->
-                </div>
-            </section>
-
-            <!-- Ricetta della Settimana -->
-            <section class="menu-section" id="recipe-section" style="margin-top: 2rem; display: none;">
-                <h2 class="section-title" id="recipe-title">🌟 Ricetta della Settimana 🌟</h2>
-                <div class="recipe-card" id="recipe-card">
-                    <div class="recipe-content">
-                        <h3 id="recipe-name">Caricamento...</h3>
-                        <p id="recipe-description">Caricamento descrizione...</p>
-                        <div class="recipe-price" id="recipe-price">CHF --</div>
-                        <button class="btn btn-primary btn-full" id="recipe-add-btn" onclick="addRecipeToCart()">
-                            <i class="fas fa-plus"></i> <span id="recipe-add-text">Aggiungi</span>
-                        </button>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Menu della Settimana -->
-            <section class="menu-section" style="margin-top: 2rem;">
-                <h2 class="section-title" id="menu-week-title">📅 Menu della Settimana</h2>
-                <div class="week-tabs">
-                    <button class="week-tab active" onclick="showWeekDay('monday')">Lunedì</button>
-                    <button class="week-tab" onclick="showWeekDay('tuesday')">Martedì</button>
-                    <button class="week-tab" onclick="showWeekDay('wednesday')">Mercoledì</button>
-                    <button class="week-tab" onclick="showWeekDay('thursday')">Giovedì</button>
-                    <button class="week-tab" onclick="showWeekDay('friday')">Venerdì</button>
-                    <button class="week-tab" onclick="showWeekDay('saturday')">Sabato</button>
-                    <button class="week-tab" onclick="showWeekDay('sunday')">Domenica</button>
-                </div>
-                <div class="products-grid" id="week-products">
-                    <!-- Weekly products loaded via JS -->
-                </div>
-            </section>
-
-            <!-- Feedback Section -->
-            <section class="feedback-section">
-                <h3 id="feedback-title">💬 Aiutaci a Migliorare</h3>
-                <p id="feedback-subtitle">I tuoi commenti ci aiutano a offrirti un servizio migliore</p>
-                <form class="feedback-form" onsubmit="submitFeedback(event)">
-                    <textarea id="feedback-text" placeholder="Cosa possiamo migliorare? Cosa ti è piaciuto?" required></textarea>
-                    <div class="anonymous-toggle">
-                        <input type="checkbox" id="anonymous-feedback">
-                        <label for="anonymous-feedback" id="anonymous-label">Invia in forma anonima</label>
-                    </div>
-                    <button type="submit" class="btn btn-primary btn-full">
-                        <i class="fas fa-paper-plane"></i> <span id="send-feedback-btn">Invia Feedback</span>
-                    </button>
-                </form>
-            </section>
-        </div>
-
-        <!-- Sidebar - Cart & Booking -->
-        <aside class="sidebar">
-            <!-- Cart -->
-            <div class="cart-section">
-                <div class="cart-header">
-                    <h3 id="cart-title">🛒 Carrello</h3>
-                    <span class="cart-count" id="cart-count">0</span>
-                </div>
-                <div class="cart-items" id="cart-items">
-                    <div class="empty-cart">
-                        <i class="fas fa-shopping-cart" style="font-size: 3rem; color: #ddd; margin-bottom: 1rem;"></i>
-                        <p id="empty-cart-text">Il carrello è vuoto</p>
-                    </div>
-                </div>
-                <div class="cart-total" id="cart-total-section" style="display: none;">
-                    <span id="total-label">Totale:</span>
-                    <span id="cart-total">CHF 0.00</span>
-                </div>
-                <div class="special-requests" id="special-requests-section" style="display: none;">
-                    <label for="special-notes" id="special-notes-label">Richieste Speciali:</label>
-                    <textarea id="special-notes" placeholder="Es: senza aglio, più piccante..."></textarea>
-                </div>
-            </div>
-
-            <!-- Booking & Checkout -->
-            <div class="booking-section" id="booking-section" style="display: none;">
-                <h3 id="booking-title">📅 Programma il Ritiro</h3>
-                
-                <!-- VIP Welcome Message (se loggato) -->
-                <div class="vip-welcome" id="vip-welcome" style="display: none;">
-                    <i class="fas fa-crown"></i>
-                    <span id="vip-welcome-text">Benvenuto VIP!</span>
-                </div>
-                
-                <div class="date-picker">
-                    <label for="pickup-date" id="pickup-date-label">Data Ritiro:</label>
-                    <input type="date" id="pickup-date" required>
-                </div>
-
-                <div class="date-picker">
-                    <label for="pickup-time" id="pickup-time-label">Orario Ritiro:</label>
-                    <select id="pickup-time" required>
-                        <option value="">Seleziona orario...</option>
-                        <!-- ORARI NO-STOP 11:00 - 22:00 -->
-                        <option value="11:00">11:00 - 11:30</option>
-                        <option value="11:30">11:30 - 12:00</option>
-                        <option value="12:00">12:00 - 12:30</option>
-                        <option value="12:30">12:30 - 13:00</option>
-                        <option value="13:00">13:00 - 13:30</option>
-                        <option value="13:30">13:30 - 14:00</option>
-                        <option value="14:00">14:00 - 14:30</option>
-                        <option value="14:30">14:30 - 15:00</option>
-                        <option value="15:00">15:00 - 15:30</option>
-                        <option value="15:30">15:30 - 16:00</option>
-                        <option value="16:00">16:00 - 16:30</option>
-                        <option value="16:30">16:30 - 17:00</option>
-                        <option value="17:00">17:00 - 17:30</option>
-                        <option value="17:30">17:30 - 18:00</option>
-                        <option value="18:00">18:00 - 18:30</option>
-                        <option value="18:30">18:30 - 19:00</option>
-                        <option value="19:00">19:00 - 19:30</option>
-                        <option value="19:30">19:30 - 20:00</option>
-                        <option value="20:00">20:00 - 20:30</option>
-                        <option value="20:30">20:30 - 21:00</option>
-                        <option value="21:00">21:00 - 21:30</option>
-                        <option value="21:30">21:30 - 22:00</option>
-                    </select>
-                </div>
-
-                <!-- Payment Method Choice -->
-                <div class="payment-options">
-                    <h4 id="payment-method-label">Metodo di Pagamento:</h4>
-                    <div class="payment-choice">
-                        <button type="button" class="active" onclick="selectPaymentMethod('now')">
-                            <i class="fas fa-credit-card"></i><br>
-                            <span id="pay-now-btn">Paga Ora</span>
-                        </button>
-                        <button type="button" onclick="selectPaymentMethod('later')">
-                            <i class="fas fa-money-bill-wave"></i><br>
-                            <span id="pay-later-btn">Paga al Ritiro</span>
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Stripe Payment Element (shown only if "Paga Ora") -->
-                <div id="stripe-payment-element"></div>
-
-                <!-- Customer Form (nascosto se VIP loggato) -->
-                <div class="customer-form" id="customer-form">
-                    <h4 id="your-info-label">I Tuoi Dati:</h4>
-                    <div class="form-group">
-                        <label for="customer-name" id="name-label">Nome:</label>
-                        <input type="text" id="customer-name" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="customer-phone" id="phone-label">Telefono:</label>
-                        <input type="tel" id="customer-phone" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="customer-email" id="email-label">Email:</label>
-                        <input type="email" id="customer-email" required>
-                    </div>
-                </div>
-
-                <!-- VIP Progress (sempre visibile se loggato) -->
-                <div class="vip-progress" id="vip-progress" style="display: none;">
-                    <p><strong id="vip-program-label">Programma Fedeltà VIP</strong></p>
-                    <div class="progress-bar">
-                        <div class="progress-fill" id="vip-progress-fill" style="width: 80%;"></div>
-                    </div>
-                    <p class="progress-text" id="vip-progress-text">8/10 ordini - Prossimo omaggio: Pizza Margherita</p>
-                </div>
-
-                <div class="form-toggle" id="guest-toggle">
-                    <a href="#" onclick="toggleGuestMode(); return false;" id="guest-mode-toggle">Ordina come Ospite (senza registrazione)</a>
-                </div>
-
-                <button class="btn btn-success btn-full" onclick="submitOrder()" id="submit-order-btn">
-                    <i class="fas fa-check-circle"></i> Conferma Ordine
+        
+        <!-- RICETTA SETTIMANA -->
+        <section class="section" id="recipe-section" style="display: none;">
+            <div class="hero-recipe" id="hero-recipe">
+                <div style="text-align: center; font-size: 1.5rem; margin-bottom: 0.5rem;">🌟</div>
+                <h3 id="recipe-title">Ricetta della Settimana</h3>
+                <div id="recipe-name" style="font-size: 1.5rem; font-weight: 700; margin-bottom: 0.5rem;">Caricamento...</div>
+                <p id="recipe-description">Caricamento descrizione...</p>
+                <div class="price" id="recipe-price">CHF --</div>
+                <button class="btn btn-success btn-full" onclick="addRecipeToCart()">
+                    <i class="fas fa-plus"></i>
+                    <span id="recipe-add-text">Aggiungi al Carrello</span>
                 </button>
             </div>
-        </aside>
+        </section>
+
+        <!-- MENU OGGI -->
+        <section class="section">
+            <h2 class="section-title">
+                <i class="fas fa-calendar-day"></i>
+                <span id="menu-today-title">Menu del Giorno</span>
+            </h2>
+            <div id="today-products" class="products-grid">
+                <div class="loading">
+                    <div class="spinner"></div>
+                    <p>Caricamento prodotti...</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- MENU SETTIMANA -->
+        <section class="section">
+            <h2 class="section-title">
+                <i class="fas fa-calendar-week"></i>
+                <span id="menu-week-title">Menu della Settimana</span>
+            </h2>
+            <div id="week-menu">
+                <!-- Giorni settimana popolati via JS -->
+            </div>
+        </section>
+
     </div>
 
-    <!-- WhatsApp Floating Button -->
-    <a href="https://wa.me/41791234567?text=Ciao!%20Ho%20una%20domanda..." class="whatsapp-btn" target="_blank">
-        <i class="fab fa-whatsapp"></i>
-    </a>
+    <!-- CART FLOATING BADGE -->
+    <div class="cart-badge" onclick="toggleCart()" id="cart-badge">
+        <i class="fas fa-shopping-cart"></i>
+        <span class="badge-count" id="cart-count">0</span>
+    </div>
 
-    <!-- Order Confirmation Modal -->
-    <div class="modal" id="confirmation-modal">
-        <div class="modal-content">
-            <i class="fas fa-check-circle" style="font-size: 4rem; color: var(--success);"></i>
-            <h2 id="order-confirmed-title">Ordine Confermato!</h2>
-            <p id="order-confirmed-text">Il tuo ordine è stato ricevuto con successo</p>
-            <div class="order-number">#<span id="order-number">12345</span></div>
-            <p id="order-details"></p>
-            <button class="btn btn-primary" onclick="closeModal()">
-                <i class="fas fa-times"></i> <span id="close-btn">Chiudi</span>
+    <!-- CART OVERLAY -->
+    <div class="cart-overlay" id="cart-overlay" onclick="toggleCart()"></div>
+
+    <!-- CART SLIDE-IN PANEL -->
+    <div class="cart-panel" id="cart-panel">
+        <div class="cart-header">
+            <h2>
+                <i class="fas fa-shopping-cart"></i>
+                <span id="cart-title">Carrello</span>
+            </h2>
+            <button class="close-cart" onclick="toggleCart()">
+                <i class="fas fa-times"></i>
             </button>
+        </div>
+        
+        <div class="cart-body" id="cart-body">
+            <div class="empty-state">
+                <i class="fas fa-shopping-cart"></i>
+                <p id="empty-cart-text">Il carrello è vuoto</p>
+            </div>
+        </div>
+        
+        <div class="cart-footer">
+            <div class="cart-total">
+                <span id="total-label">Totale:</span>
+                <span id="cart-total">CHF 0.00</span>
+            </div>
+            <button class="btn btn-success btn-full" onclick="proceedToCheckout()">
+                <i class="fas fa-check-circle"></i>
+                <span id="checkout-btn">Procedi all'Ordine</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- CHECKOUT MODAL -->
+    <div class="checkout-modal" id="checkout-modal">
+        <div class="checkout-content">
+            <div class="checkout-header">
+                <h2>
+                    <i class="fas fa-check-circle"></i>
+                    <span id="checkout-title">Completa Ordine</span>
+                </h2>
+                <button class="close-cart" onclick="closeCheckout()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div class="checkout-body">
+                <!-- Order Summary -->
+                <div class="order-summary">
+                    <h3 style="margin-bottom: 1rem;">📋 <span id="summary-title">Riepilogo Ordine</span></h3>
+                    <div id="order-items-summary"></div>
+                    <div class="summary-total">
+                        <div class="summary-row">
+                            <span id="total-label-checkout">Totale:</span>
+                            <span id="checkout-total">CHF 0.00</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Guest Mode Toggle -->
+                <label class="guest-mode-toggle">
+                    <input type="checkbox" id="guest-mode" onchange="toggleGuestMode()">
+                    <span id="guest-mode-label">Ordina come Ospite (senza dati)</span>
+                </label>
+
+                <!-- Customer Form -->
+                <form id="checkout-form" onsubmit="submitOrder(event)">
+                    <div class="form-group">
+                        <label class="form-label" id="name-label">Nome:</label>
+                        <input type="text" class="form-input" id="customer-name" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" id="phone-label">Telefono:</label>
+                        <input type="tel" class="form-input" id="customer-phone" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" id="email-label">Email:</label>
+                        <input type="email" class="form-input" id="customer-email" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" id="pickup-date-label">Data Ritiro:</label>
+                        <input type="date" class="form-input" id="pickup-date" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" id="pickup-time-label">Orario Ritiro:</label>
+                        <input type="time" class="form-input" id="pickup-time" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" id="notes-label">Note Speciali (opzionale):</label>
+                        <textarea class="form-input" id="special-notes" rows="3" placeholder="Es: allergie, preferenze..."></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" id="payment-label">Metodo di Pagamento:</label>
+                        <div class="payment-options">
+                            <div class="payment-option selected" onclick="selectPayment('later')" id="payment-later">
+                                <i class="fas fa-money-bill"></i>
+                                <div id="payment-later-text">Al Ritiro</div>
+                            </div>
+                            <div class="payment-option" onclick="selectPayment('now')" id="payment-now">
+                                <i class="fas fa-credit-card"></i>
+                                <div id="payment-now-text">Online</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-success btn-full" id="submit-order-btn">
+                        <i class="fas fa-paper-plane"></i>
+                        <span id="submit-order-text">Invia Ordine</span>
+                    </button>
+                </form>
+            </div>
         </div>
     </div>
 
     <script>
         // Configuration
         const CONFIG = {
-            API_URL: 'https://script.google.com/macros/s/AKfycbzmt8l-QWoyj9SboaM6fPjflkJ48ugt6-1bW-52eBw6ozDOudZxqH_JM3CF664u_FxI/exec',
-            restaurantName: {
-                it: "Ristorante Demo",
-                de: "Restaurant Demo",
-                fr: "Restaurant Démo"
-            },
-            restaurantTagline: {
-                it: "Cucina Italiana Autentica",
-                de: "Authentische Italienische Küche",
-                fr: "Cuisine Italienne Authentique"
-            },
-            whatsapp: "+41791234567"
+            API_URL: 'https://script.google.com/macros/s/AKfycbzC8NWtJ43WLR2LcCKn40uc0cRchQsQSl2st8sYQK2banTSkq1TXPY3edIrFJQB01idWQ/exec',
         };
 
         // State
         let currentLang = 'it';
+        let allProducts = [];
         let cart = [];
-        let isVIP = false;
-        let vipCustomer = null; // { name, phone, email, vipLevel, ordersCount }
-        let isGuestMode = false;
-        let currentWeekDay = 'monday';
-        let paymentMethod = 'now';
-        let allProducts = []; // Prodotti caricati dal backend
+        let weekProducts = {};
 
-        // Initialize
+        // Init
         document.addEventListener('DOMContentLoaded', () => {
-            loadProductsFromBackend();
-            loadRecipeOfWeek();  // ✅ Carica ricetta settimana
-            updateCartUI();
-            setMinDate();
-            checkVIPSession();
+            loadProducts();
+            loadRecipeOfWeek();
         });
 
-        async function loadProductsFromBackend() {
+        // Load Products
+        async function loadProducts() {
             try {
                 const response = await fetch(`${CONFIG.API_URL}?action=getProdotti`);
                 const result = await response.json();
                 
                 if (result.prodotti) {
                     allProducts = result.prodotti;
-                    displayProducts();
-                } else {
-                    console.error('Errore caricamento prodotti:', result.error);
-                    // Fallback: mostra messaggio
-                    document.getElementById('today-products').innerHTML = 
-                        '<p style="text-align: center; padding: 2rem; color: #999;">Errore caricamento menu. Riprova.</p>';
+                    displayTodayProducts();
+                    displayWeekMenu();
                 }
             } catch (error) {
-                console.error('Errore connessione:', error);
-                document.getElementById('today-products').innerHTML = 
-                    '<p style="text-align: center; padding: 2rem; color: #999;">Impossibile caricare il menu. Verifica la connessione.</p>';
+                console.error('Errore caricamento prodotti:', error);
             }
         }
 
-        function displayProducts() {
-            // Ottieni giorno corrente
+        // Display Today Products
+        function displayTodayProducts() {
             const today = new Date();
             const dayNames = ['domenica', 'lunedi', 'martedi', 'mercoledi', 'giovedi', 'venerdi', 'sabato'];
             const currentDay = dayNames[today.getDay()];
             
-            console.log('📅 Giorno corrente:', currentDay);
-            
-            // ✅ Filtra prodotti per oggi usando nuovo sistema giorni
             const todayProducts = allProducts.filter(p => {
                 if (!p.disponibile) return false;
-                
-                // Se prodotto ha sistema giorni nuovo
                 if (p.giorni && typeof p.giorni === 'object') {
                     return p.giorni[currentDay] === true;
                 }
-                
-                // Fallback per vecchio sistema (compatibilità)
-                const giorno = (p.giorno || 'OGGI').toUpperCase().trim();
-                return giorno === 'OGGI' || 
-                       giorno === currentDay.toUpperCase() || 
-                       giorno === 'TUTTI_I_GIORNI' ||
-                       giorno === 'TUTTI I GIORNI';
+                return false;
             });
             
-            console.log(`✅ Prodotti per ${currentDay}:`, todayProducts.length);
+            const container = document.getElementById('today-products');
             
-            const todayGrid = document.getElementById('today-products');
             if (todayProducts.length === 0) {
-                todayGrid.innerHTML = '<p style="text-align: center; padding: 2rem; color: #999;">Nessun prodotto disponibile oggi</p>';
-            } else {
-                todayGrid.innerHTML = todayProducts.map(product => {
-                    // ✅ FIX: Supporto traduzioni con fallback
-                    const nome = (typeof product.nome === 'object' && product.nome[currentLang]) ? 
-                                  product.nome[currentLang] : 
-                                  (typeof product.nome === 'string' ? product.nome : 'Prodotto');
-                    
-                    const descrizione = (typeof product.descrizione === 'object' && product.descrizione[currentLang]) ? 
-                                         product.descrizione[currentLang] : 
-                                         (typeof product.descrizione === 'string' ? product.descrizione : '');
-                    
-                    return `
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-info-circle"></i>
+                        <p>Nessun prodotto disponibile oggi</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = todayProducts.map(product => {
+                const nome = getName(product);
+                const descrizione = getDescription(product);
+                
+                return `
                     <div class="product-card">
-                        <div class="product-info">
-                            <div class="product-name">${nome}</div>
-                            <div class="product-description">${descrizione}</div>
+                        <div class="product-name">${nome}</div>
+                        <div class="product-description">${descrizione}</div>
+                        <div class="product-footer">
                             <div class="product-price">CHF ${product.prezzo.toFixed(2)}</div>
-                            <div class="product-actions">
-                                <button class="btn btn-primary btn-full" onclick="addToCart(${product.id}, 'today')">
-                                    <i class="fas fa-plus"></i> ${currentLang === 'it' ? 'Aggiungi' : currentLang === 'de' ? 'Hinzufügen' : 'Ajouter'}
-                                </button>
+                            <button class="btn btn-primary" onclick="addToCart(${product.id})">
+                                <i class="fas fa-plus"></i>
+                                ${getAddText()}
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Display Week Menu
+        function displayWeekMenu() {
+            const days = [
+                {key: 'lunedi', label: 'Lunedì', icon: '📅'},
+                {key: 'martedi', label: 'Martedì', icon: '📅'},
+                {key: 'mercoledi', label: 'Mercoledì', icon: '📅'},
+                {key: 'giovedi', label: 'Giovedì', icon: '📅'},
+                {key: 'venerdi', label: 'Venerdì', icon: '📅'},
+                {key: 'sabato', label: 'Sabato', icon: '📅'},
+                {key: 'domenica', label: 'Domenica', icon: '📅'}
+            ];
+            
+            // Group products by day
+            days.forEach(day => {
+                weekProducts[day.key] = allProducts.filter(p => {
+                    if (!p.disponibile) return false;
+                    if (p.giorni && typeof p.giorni === 'object') {
+                        return p.giorni[day.key] === true;
+                    }
+                    return false;
+                });
+            });
+            
+            const container = document.getElementById('week-menu');
+            container.innerHTML = days.map(day => {
+                const products = weekProducts[day.key] || [];
+                const count = products.length;
+                
+                return `
+                    <div class="week-day" id="day-${day.key}">
+                        <div class="week-day-header" onclick="toggleDay('${day.key}')">
+                            <div class="week-day-title">
+                                <span>${day.icon}</span>
+                                <span>${day.label}</span>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                <span class="week-day-count">${count} prodotti</span>
+                                <i class="fas fa-chevron-down week-day-icon"></i>
+                            </div>
+                        </div>
+                        <div class="week-day-body">
+                            <div class="week-day-products">
+                                ${products.map(product => {
+                                    const nome = getName(product);
+                                    const descrizione = getDescription(product);
+                                    
+                                    return `
+                                        <div class="product-card">
+                                            <div class="product-name">${nome}</div>
+                                            <div class="product-description">${descrizione}</div>
+                                            <div class="product-footer">
+                                                <div class="product-price">CHF ${product.prezzo.toFixed(2)}</div>
+                                                <button class="btn btn-primary" onclick="addToCart(${product.id})">
+                                                    <i class="fas fa-plus"></i>
+                                                    ${getAddText()}
+                                                </button>
+                                            </div>
+                                        </div>
+                                    `;
+                                }).join('')}
                             </div>
                         </div>
                     </div>
-                `}).join('');
-            }
-            
-            // Carica anche i prodotti settimanali
-            showWeekDay(currentWeekDay);
+                `;
+            }).join('');
         }
 
-        // ✅ NUOVO: Carica Ricetta della Settimana
+        // Toggle Day
+        function toggleDay(day) {
+            const element = document.getElementById(`day-${day}`);
+            element.classList.toggle('expanded');
+        }
+
+        // Load Recipe of Week
         async function loadRecipeOfWeek() {
             try {
                 const response = await fetch(CONFIG.API_URL + '?action=getMenuData');
                 const result = await response.json();
                 
                 if (result.recipeWeekId && result.recipeWeekName) {
-                    // Trova prodotto ricetta settimana
                     const recipe = allProducts.find(p => p.id == result.recipeWeekId);
                     
                     if (recipe) {
-                        // Mostra sezione ricetta
                         document.getElementById('recipe-section').style.display = 'block';
                         
-                        // Popola dati ricetta con traduzioni
-                        const nome = (typeof recipe.nome === 'object' && recipe.nome[currentLang]) ? 
-                                      recipe.nome[currentLang] : 
-                                      (typeof recipe.nome === 'string' ? recipe.nome : result.recipeWeekName);
-                        
-                        const descrizione = (typeof recipe.descrizione === 'object' && recipe.descrizione[currentLang]) ? 
-                                             recipe.descrizione[currentLang] : 
-                                             (typeof recipe.descrizione === 'string' ? recipe.descrizione : result.recipeWeekDesc || '');
+                        const nome = getName(recipe);
+                        const descrizione = getDescription(recipe);
                         
                         document.getElementById('recipe-name').textContent = nome;
                         document.getElementById('recipe-description').textContent = descrizione;
                         document.getElementById('recipe-price').textContent = `CHF ${recipe.prezzo.toFixed(2)}`;
                         
-                        // Salva ID per addToCart
                         window.recipeOfWeekId = recipe.id;
-                        
-                        // Aggiorna testo bottone
-                        updateRecipeButton();
                     }
                 }
             } catch (error) {
-                console.log('⚠️ Ricetta settimana non configurata');
+                console.log('Ricetta settimana non disponibile');
             }
-        }
-
-        function updateRecipeButton() {
-            const addText = currentLang === 'it' ? 'Aggiungi' : 
-                           currentLang === 'de' ? 'Hinzufügen' : 
-                           'Ajouter';
-            document.getElementById('recipe-add-text').textContent = addText;
         }
 
         function addRecipeToCart() {
             if (window.recipeOfWeekId) {
-                addToCart(window.recipeOfWeekId, 'recipe');
+                addToCart(window.recipeOfWeekId);
             }
         }
 
-        function checkVIPSession() {
-            // Controlla se c'è un cliente VIP salvato in localStorage
-            const savedVIP = localStorage.getItem('vipCustomer');
-            if (savedVIP) {
-                vipCustomer = JSON.parse(savedVIP);
-                isVIP = true;
-                updateVIPUI();
-            }
-        }
-
-        function updateVIPUI() {
-            if (isVIP && vipCustomer) {
-                // Aggiorna badge header
-                document.getElementById('vip-status').textContent = `Ciao ${vipCustomer.name.split(' ')[0]}!`;
-                
-                // Mostra welcome message
-                document.getElementById('vip-welcome').style.display = 'block';
-                document.getElementById('vip-welcome-text').textContent = 
-                    currentLang === 'it' ? `Benvenuto ${vipCustomer.name}!` :
-                    currentLang === 'de' ? `Willkommen ${vipCustomer.name}!` :
-                    `Bienvenue ${vipCustomer.name}!`;
-                
-                // Nascondi form dati cliente (i dati sono già salvati)
-                document.getElementById('customer-form').style.display = 'none';
-                
-                // Nascondi toggle guest mode
-                document.getElementById('guest-toggle').style.display = 'none';
-                
-                // Mostra progress bar VIP
-                document.getElementById('vip-progress').style.display = 'block';
-                updateVIPProgress();
-            }
-        }
-
-        function updateVIPProgress() {
-            if (!vipCustomer) return;
-            
-            const ordersCount = vipCustomer.ordersCount || 0;
-            const progressPercent = (ordersCount % 10) * 10;
-            const nextReward = 10 - (ordersCount % 10);
-            
-            document.getElementById('vip-progress-fill').style.width = progressPercent + '%';
-            document.getElementById('vip-progress-text').textContent = 
-                currentLang === 'it' ? `${ordersCount % 10}/10 ordini - Prossimo omaggio in ${nextReward} ordini` :
-                currentLang === 'de' ? `${ordersCount % 10}/10 Bestellungen - Nächstes Geschenk in ${nextReward} Bestellungen` :
-                `${ordersCount % 10}/10 commandes - Prochain cadeau dans ${nextReward} commandes`;
-        }
-
-        function toggleVIPLogin() {
-            if (isVIP) {
-                // Logout VIP
-                if (confirm(currentLang === 'it' ? 'Vuoi uscire dall\'account VIP?' : 
-                            currentLang === 'de' ? 'Möchten Sie sich vom VIP-Konto abmelden?' :
-                            'Voulez-vous vous déconnecter du compte VIP?')) {
-                    localStorage.removeItem('vipCustomer');
-                    vipCustomer = null;
-                    isVIP = false;
-                    document.getElementById('vip-status').textContent = 'Login VIP';
-                    document.getElementById('vip-welcome').style.display = 'none';
-                    document.getElementById('customer-form').style.display = 'block';
-                    document.getElementById('guest-toggle').style.display = 'block';
-                    document.getElementById('vip-progress').style.display = 'none';
-                }
-            } else {
-                // Mostra form login VIP (semplificato - in produzione usare sistema reale)
-                const email = prompt(currentLang === 'it' ? 'Inserisci la tua email VIP:' :
-                                    currentLang === 'de' ? 'Geben Sie Ihre VIP-E-Mail ein:' :
-                                    'Entrez votre email VIP:');
-                
-                if (email) {
-                    // Simula login VIP (in produzione fare chiamata API)
-                    vipCustomer = {
-                        name: "Mario Rossi",
-                        phone: "+41791234567",
-                        email: email,
-                        vipLevel: 1,
-                        ordersCount: 8
-                    };
-                    localStorage.setItem('vipCustomer', JSON.stringify(vipCustomer));
-                    isVIP = true;
-                    updateVIPUI();
-                }
-            }
-        }
-
-        function switchLang(lang) {
-            currentLang = lang;
-            document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
-            event.target.classList.add('active');
-            updateUILanguage();
-            updateRecipeButton();  // ✅ Aggiorna bottone ricetta
-            loadRecipeOfWeek();    // ✅ Ricarica ricetta con nuova lingua
-            displayProducts(); // Ricarica i prodotti con la nuova lingua
-        }
-
-        function updateUILanguage() {
-            const translations = {
-                it: {
-                    vipStatus: isVIP ? `Ciao ${vipCustomer?.name.split(' ')[0] || ''}!` : "Login VIP",
-                    heroTitle: "🌟 Ricetta del Giorno 🌟",
-                    menuTodayTitle: "📋 Menu del Giorno",
-                    recipeTitle: "🌟 Ricetta della Settimana 🌟",
-                    menuWeekTitle: "📅 Menu della Settimana",
-                    cartTitle: "🛒 Carrello",
-                    emptyCart: "Il carrello è vuoto",
-                    totalLabel: "Totale:",
-                    specialNotesLabel: "Richieste Speciali:",
-                    bookingTitle: "📅 Programma il Ritiro",
-                    pickupDateLabel: "Data Ritiro:",
-                    pickupTimeLabel: "Orario Ritiro:",
-                    paymentMethodLabel: "Metodo di Pagamento:",
-                    payNow: "Paga Ora",
-                    payLater: "Paga al Ritiro",
-                    yourInfo: "I Tuoi Dati:",
-                    nameLabel: "Nome:",
-                    phoneLabel: "Telefono:",
-                    emailLabel: "Email:",
-                    vipProgramLabel: "Programma Fedeltà VIP",
-                    guestModeToggle: "Ordina come Ospite (senza registrazione)",
-                    submitOrder: "Conferma Ordine",
-                    feedbackTitle: "💬 Aiutaci a Migliorare",
-                    feedbackSubtitle: "I tuoi commenti ci aiutano a offrirti un servizio migliore",
-                    anonymousLabel: "Invia in forma anonima",
-                    sendFeedback: "Invia Feedback",
-                    orderConfirmedTitle: "Ordine Confermato!",
-                    orderConfirmedText: "Il tuo ordine è stato ricevuto con successo",
-                    closeBtn: "Chiudi"
-                },
-                de: {
-                    vipStatus: isVIP ? `Hallo ${vipCustomer?.name.split(' ')[0] || ''}!` : "VIP Login",
-                    heroTitle: "🌟 Rezept des Tages 🌟",
-                    menuTodayTitle: "📋 Menü des Tages",
-                    recipeTitle: "🌟 Rezept der Woche 🌟",
-                    menuWeekTitle: "📅 Wochenmenü",
-                    cartTitle: "🛒 Warenkorb",
-                    emptyCart: "Der Warenkorb ist leer",
-                    totalLabel: "Gesamt:",
-                    specialNotesLabel: "Spezielle Wünsche:",
-                    bookingTitle: "📅 Abholung planen",
-                    pickupDateLabel: "Abholdatum:",
-                    pickupTimeLabel: "Abholzeit:",
-                    paymentMethodLabel: "Zahlungsmethode:",
-                    payNow: "Jetzt bezahlen",
-                    payLater: "Bei Abholung bezahlen",
-                    yourInfo: "Ihre Daten:",
-                    nameLabel: "Name:",
-                    phoneLabel: "Telefon:",
-                    emailLabel: "E-Mail:",
-                    vipProgramLabel: "VIP-Treueprogramm",
-                    guestModeToggle: "Als Gast bestellen (ohne Registrierung)",
-                    submitOrder: "Bestellung bestätigen",
-                    feedbackTitle: "💬 Helfen Sie uns, besser zu werden",
-                    feedbackSubtitle: "Ihr Feedback hilft uns, einen besseren Service zu bieten",
-                    anonymousLabel: "Anonym senden",
-                    sendFeedback: "Feedback senden",
-                    orderConfirmedTitle: "Bestellung bestätigt!",
-                    orderConfirmedText: "Ihre Bestellung wurde erfolgreich erhalten",
-                    closeBtn: "Schließen"
-                },
-                fr: {
-                    vipStatus: isVIP ? `Bonjour ${vipCustomer?.name.split(' ')[0] || ''}!` : "Login VIP",
-                    heroTitle: "🌟 Recette du Jour 🌟",
-                    menuTodayTitle: "📋 Menu du Jour",
-                    recipeTitle: "🌟 Recette de la Semaine 🌟",
-                    menuWeekTitle: "📅 Menu de la Semaine",
-                    cartTitle: "🛒 Panier",
-                    emptyCart: "Le panier est vide",
-                    totalLabel: "Total:",
-                    specialNotesLabel: "Demandes Spéciales:",
-                    bookingTitle: "📅 Programmer le Retrait",
-                    pickupDateLabel: "Date de Retrait:",
-                    pickupTimeLabel: "Heure de Retrait:",
-                    paymentMethodLabel: "Méthode de Paiement:",
-                    payNow: "Payer Maintenant",
-                    payLater: "Payer au Retrait",
-                    yourInfo: "Vos Informations:",
-                    nameLabel: "Nom:",
-                    phoneLabel: "Téléphone:",
-                    emailLabel: "Email:",
-                    vipProgramLabel: "Programme de Fidélité VIP",
-                    guestModeToggle: "Commander en tant qu'Invité (sans inscription)",
-                    submitOrder: "Confirmer la Commande",
-                    feedbackTitle: "💬 Aidez-nous à nous Améliorer",
-                    feedbackSubtitle: "Vos commentaires nous aident à offrir un meilleur service",
-                    anonymousLabel: "Envoyer de manière anonyme",
-                    sendFeedback: "Envoyer un Feedback",
-                    orderConfirmedTitle: "Commande Confirmée!",
-                    orderConfirmedText: "Votre commande a été reçue avec succès",
-                    closeBtn: "Fermer"
-                }
-            };
-
-            const t = translations[currentLang];
-            document.getElementById('vip-status').textContent = t.vipStatus;
-            document.getElementById('hero-title').textContent = t.heroTitle;
-            document.getElementById('menu-today-title').textContent = t.menuTodayTitle;
-            document.getElementById('recipe-title').textContent = t.recipeTitle;
-            document.getElementById('menu-week-title').textContent = t.menuWeekTitle;
-            document.getElementById('cart-title').textContent = t.cartTitle;
-            document.getElementById('empty-cart-text').textContent = t.emptyCart;
-            document.getElementById('total-label').textContent = t.totalLabel;
-            document.getElementById('special-notes-label').textContent = t.specialNotesLabel;
-            document.getElementById('booking-title').textContent = t.bookingTitle;
-            document.getElementById('pickup-date-label').textContent = t.pickupDateLabel;
-            document.getElementById('pickup-time-label').textContent = t.pickupTimeLabel;
-            document.getElementById('payment-method-label').textContent = t.paymentMethodLabel;
-            document.getElementById('pay-now-btn').textContent = t.payNow;
-            document.getElementById('pay-later-btn').textContent = t.payLater;
-            document.getElementById('your-info-label').textContent = t.yourInfo;
-            document.getElementById('name-label').textContent = t.nameLabel;
-            document.getElementById('phone-label').textContent = t.phoneLabel;
-            document.getElementById('email-label').textContent = t.emailLabel;
-            document.getElementById('vip-program-label').textContent = t.vipProgramLabel;
-            document.getElementById('guest-mode-toggle').textContent = t.guestModeToggle;
-            document.getElementById('submit-order-btn').innerHTML = `<i class="fas fa-check-circle"></i> ${t.submitOrder}`;
-            document.getElementById('feedback-title').textContent = t.feedbackTitle;
-            document.getElementById('feedback-subtitle').textContent = t.feedbackSubtitle;
-            document.getElementById('anonymous-label').textContent = t.anonymousLabel;
-            document.getElementById('send-feedback-btn').textContent = t.sendFeedback;
-            document.getElementById('order-confirmed-title').textContent = t.orderConfirmedTitle;
-            document.getElementById('order-confirmed-text').textContent = t.orderConfirmedText;
-            document.getElementById('close-btn').textContent = t.closeBtn;
-        }
-
-        function loadProducts() {
-            // Today's products
-            const todayGrid = document.getElementById('today-products');
-            todayGrid.innerHTML = PRODUCTS.today.map(product => `
-                <div class="product-card">
-                    <img src="${product.image}" alt="${product.name[currentLang]}" class="product-image">
-                    <div class="product-info">
-                        <div class="product-name">${product.name[currentLang]}</div>
-                        <div class="product-description">${product.description[currentLang]}</div>
-                        <div class="product-price">CHF ${product.price.toFixed(2)}</div>
-                        <div class="product-actions">
-                            <button class="btn btn-primary btn-full" onclick="addToCart(${product.id}, 'today')">
-                                <i class="fas fa-plus"></i> Aggiungi
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            `).join('');
-
-            // Load current week day
-            showWeekDay(currentWeekDay);
-        }
-
-        function showWeekDay(day) {
-            currentWeekDay = day;
-            document.querySelectorAll('.week-tab').forEach(tab => tab.classList.remove('active'));
-            event?.target?.classList.add('active');
-
-            const weekGrid = document.getElementById('week-products');
-            
-            // ✅ Mappa giorni inglese -> italiano
-            const dayMap = {
-                'monday': 'lunedi',
-                'tuesday': 'martedi',
-                'wednesday': 'mercoledi',
-                'thursday': 'giovedi',
-                'friday': 'venerdi',
-                'saturday': 'sabato',
-                'sunday': 'domenica'
-            };
-            
-            const dayName = dayMap[day];
-            
-            // ✅ Filtra prodotti per il giorno selezionato usando nuovo sistema
-            const dayProducts = allProducts.filter(p => {
-                if (!p.disponibile) return false;
-                
-                // Nuovo sistema giorni
-                if (p.giorni && typeof p.giorni === 'object') {
-                    return p.giorni[dayName] === true;
-                }
-                
-                // Fallback vecchio sistema
-                const giorno = (p.giorno || '').toUpperCase();
-                return giorno === dayName.toUpperCase() || 
-                       giorno === 'TUTTI_I_GIORNI' ||
-                       giorno === 'TUTTI I GIORNI';
-            });
-            
-            if (dayProducts.length === 0) {
-                weekGrid.innerHTML = '<p style="text-align: center; padding: 2rem; color: #999;">Nessun prodotto disponibile per questo giorno</p>';
-                return;
-            }
-
-            weekGrid.innerHTML = dayProducts.map(product => `
-                <div class="product-card">
-                    <div class="product-info">
-                        <div class="product-name">${product.nome[currentLang]}</div>
-                        <div class="product-description">${product.descrizione[currentLang]}</div>
-                        <div class="product-price">CHF ${product.prezzo.toFixed(2)}</div>
-                        <div class="product-actions">
-                            <button class="btn btn-primary btn-full" onclick="addToCart(${product.id}, '${day}')">
-                                <i class="fas fa-plus"></i> Aggiungi
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        // Funzione addRecipeToCart rimossa - non più necessaria
-
-        function addToCart(productId, source) {
-            let product;
-            
-            // Cerca il prodotto nei dati dal backend
-            product = allProducts.find(p => p.id === productId);
-            
-            // Fallback per ricetta del giorno (se non trovata)
-            if (!product && productId === 999) {
-                product = {
-                    id: 999,
-                    nome: { it: "Carbonara Romana", de: "Carbonara Romana", fr: "Carbonara Romana" },
-                    prezzo: 18.50
-                };
-            }
-
+        // Add to Cart
+        function addToCart(productId) {
+            const product = allProducts.find(p => p.id === productId);
             if (!product) return;
-
-            const existingItem = cart.find(item => item.id === productId);
-            if (existingItem) {
-                existingItem.quantity++;
+            
+            const existing = cart.find(item => item.id === productId);
+            
+            if (existing) {
+                existing.quantity++;
             } else {
                 cart.push({
-                    id: productId,
-                    name: product.nome[currentLang],
+                    id: product.id,
+                    name: getName(product),
                     price: product.prezzo,
                     quantity: 1
                 });
             }
-
-            updateCartUI();
+            
+            updateCart();
+            
+            // Feedback visivo
+            const badge = document.getElementById('cart-badge');
+            badge.style.transform = 'scale(1.2)';
+            setTimeout(() => {
+                badge.style.transform = 'scale(1)';
+            }, 200);
         }
 
-        function updateCartUI() {
-            const cartItems = document.getElementById('cart-items');
-            const cartCount = document.getElementById('cart-count');
-            const cartTotalSection = document.getElementById('cart-total-section');
-            const cartTotal = document.getElementById('cart-total');
-            const specialRequestsSection = document.getElementById('special-requests-section');
-            const bookingSection = document.getElementById('booking-section');
-
-            cartCount.textContent = cart.reduce((sum, item) => sum + item.quantity, 0);
-
-            if (cart.length === 0) {
-                cartItems.innerHTML = `
-                    <div class="empty-cart">
-                        <i class="fas fa-shopping-cart" style="font-size: 3rem; color: #ddd; margin-bottom: 1rem;"></i>
-                        <p id="empty-cart-text">${currentLang === 'it' ? 'Il carrello è vuoto' : currentLang === 'de' ? 'Der Warenkorb ist leer' : 'Le panier est vide'}</p>
-                    </div>
-                `;
-                cartTotalSection.style.display = 'none';
-                specialRequestsSection.style.display = 'none';
-                bookingSection.style.display = 'none';
-                return;
-            }
-
-            cartItems.innerHTML = cart.map(item => `
-                <div class="cart-item">
-                    <div class="cart-item-info">
-                        <div class="cart-item-name">${item.name}</div>
-                        <div class="cart-item-price">CHF ${item.price.toFixed(2)}</div>
-                    </div>
-                    <div class="cart-item-qty">
-                        <button class="qty-btn" onclick="updateQuantity(${item.id}, -1)">-</button>
-                        <span>${item.quantity}</span>
-                        <button class="qty-btn" onclick="updateQuantity(${item.id}, 1)">+</button>
-                    </div>
-                </div>
-            `).join('');
-
-            const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-            cartTotal.textContent = `CHF ${total.toFixed(2)}`;
-            cartTotalSection.style.display = 'flex';
-            specialRequestsSection.style.display = 'block';
-            bookingSection.style.display = 'block';
+        // Remove from Cart
+        function removeFromCart(productId) {
+            cart = cart.filter(item => item.id !== productId);
+            updateCart();
         }
 
-        function updateQuantity(productId, change) {
+        // Update Quantity
+        function updateQuantity(productId, delta) {
             const item = cart.find(item => item.id === productId);
             if (!item) return;
-
-            item.quantity += change;
-            if (item.quantity <= 0) {
-                cart = cart.filter(i => i.id !== productId);
-            }
-
-            updateCartUI();
-        }
-
-        function setMinDate() {
-            // ✅ PERMETTI ORDINI PER OGGI
-            const today = new Date();
-            const minDate = today.toISOString().split('T')[0];
-            document.getElementById('pickup-date').min = minDate;
-            document.getElementById('pickup-date').value = minDate;
-        }
-
-        function selectPaymentMethod(method) {
-            paymentMethod = method;
-            document.querySelectorAll('.payment-choice button').forEach(btn => btn.classList.remove('active'));
-            event.target.classList.add('active');
-
-            const stripeElement = document.getElementById('stripe-payment-element');
             
-            if (method === 'now') {
-                stripeElement.innerHTML = `
-                    <div style="padding: 1rem; background: white; border-radius: 10px; border: 2px solid var(--border);">
-                        <p style="margin-bottom: 1rem; font-weight: bold;">
-                            <i class="fas fa-lock"></i> Pagamento Sicuro con Stripe
-                        </p>
-                        <p style="font-size: 0.9rem; color: #666; margin-bottom: 1rem;">
-                            Accettiamo: TWINT, Apple Pay, Google Pay, Carte di Credito
-                        </p>
-                        <div id="payment-element-container" style="min-height: 100px; background: #f8f9fa; padding: 1rem; border-radius: 5px; text-align: center;">
-                            <i class="fas fa-credit-card" style="font-size: 2rem; color: #ddd;"></i>
-                            <p style="color: #999; margin-top: 0.5rem;">Elemento di pagamento Stripe (demo)</p>
-                        </div>
+            item.quantity += delta;
+            
+            if (item.quantity <= 0) {
+                removeFromCart(productId);
+            } else {
+                updateCart();
+            }
+        }
+
+        // Update Cart UI
+        function updateCart() {
+            const count = cart.reduce((sum, item) => sum + item.quantity, 0);
+            const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            
+            document.getElementById('cart-count').textContent = count;
+            document.getElementById('cart-total').textContent = `CHF ${total.toFixed(2)}`;
+            
+            const cartBody = document.getElementById('cart-body');
+            
+            if (cart.length === 0) {
+                cartBody.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-shopping-cart"></i>
+                        <p id="empty-cart-text">${getEmptyCartText()}</p>
                     </div>
                 `;
             } else {
-                stripeElement.innerHTML = '';
+                cartBody.innerHTML = cart.map(item => `
+                    <div class="cart-item">
+                        <div class="cart-item-header">
+                            <div class="cart-item-name">${item.name}</div>
+                            <button class="cart-item-remove" onclick="removeFromCart(${item.id})">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                        <div class="cart-item-controls">
+                            <div class="cart-item-quantity">
+                                <button class="qty-btn" onclick="updateQuantity(${item.id}, -1)">−</button>
+                                <span class="qty-value">${item.quantity}</span>
+                                <button class="qty-btn" onclick="updateQuantity(${item.id}, 1)">+</button>
+                            </div>
+                            <div class="cart-item-price">CHF ${(item.price * item.quantity).toFixed(2)}</div>
+                        </div>
+                    </div>
+                `).join('');
             }
+        }
+
+        // Toggle Cart
+        function toggleCart() {
+            const overlay = document.getElementById('cart-overlay');
+            const panel = document.getElementById('cart-panel');
+            
+            overlay.classList.toggle('active');
+            panel.classList.toggle('active');
+            
+            if (panel.classList.contains('active')) {
+                document.body.style.overflow = 'hidden';
+            } else {
+                document.body.style.overflow = '';
+            }
+        }
+
+        // Proceed to Checkout
+        function proceedToCheckout() {
+            if (cart.length === 0) {
+                alert(getEmptyCartText());
+                return;
+            }
+            
+            // Chiudi carrello
+            toggleCart();
+            
+            // Mostra checkout modal
+            setTimeout(() => {
+                showCheckout();
+            }, 300);
+        }
+
+        let selectedPayment = 'later';
+        let isGuestMode = false;
+
+        function showCheckout() {
+            // Popola riepilogo ordine
+            const summaryContainer = document.getElementById('order-items-summary');
+            summaryContainer.innerHTML = cart.map(item => `
+                <div class="summary-row">
+                    <span>${item.name} x${item.quantity}</span>
+                    <span>CHF ${(item.price * item.quantity).toFixed(2)}</span>
+                </div>
+            `).join('');
+            
+            const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            document.getElementById('checkout-total').textContent = `CHF ${total.toFixed(2)}`;
+            
+            // Imposta data minima oggi
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('pickup-date').min = today;
+            document.getElementById('pickup-date').value = today;
+            
+            // Imposta ora default 12:00
+            document.getElementById('pickup-time').value = '12:00';
+            
+            // Mostra modal
+            document.getElementById('checkout-modal').classList.add('active');
+            document.body.style.overflow = 'hidden';
+            
+            // Update translations
+            updateCheckoutTranslations();
+        }
+
+        function closeCheckout() {
+            document.getElementById('checkout-modal').classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        function selectPayment(method) {
+            selectedPayment = method;
+            document.querySelectorAll('.payment-option').forEach(opt => opt.classList.remove('selected'));
+            document.getElementById(`payment-${method}`).classList.add('selected');
         }
 
         function toggleGuestMode() {
-            isGuestMode = !isGuestMode;
-            const customerForm = document.getElementById('customer-form');
-            const toggle = document.getElementById('guest-mode-toggle');
+            isGuestMode = document.getElementById('guest-mode').checked;
+            const form = document.getElementById('checkout-form');
+            const inputs = ['customer-name', 'customer-phone', 'customer-email'];
             
-            if (isGuestMode) {
-                customerForm.style.display = 'none';
-                toggle.textContent = currentLang === 'it' ? 'Inserisci i tuoi dati (diventa VIP)' : 
-                                     currentLang === 'de' ? 'Geben Sie Ihre Daten ein (VIP werden)' : 
-                                     'Entrez vos données (devenir VIP)';
-            } else {
-                customerForm.style.display = 'block';
-                toggle.textContent = currentLang === 'it' ? 'Ordina come Ospite (senza registrazione)' : 
-                                     currentLang === 'de' ? 'Als Gast bestellen (ohne Registrierung)' : 
-                                     'Commander en tant qu\'Invité (sans inscription)';
-            }
+            inputs.forEach(id => {
+                const input = document.getElementById(id);
+                if (isGuestMode) {
+                    input.required = false;
+                    input.disabled = true;
+                    input.style.opacity = '0.5';
+                } else {
+                    input.required = true;
+                    input.disabled = false;
+                    input.style.opacity = '1';
+                }
+            });
         }
 
-        let isSubmitting = false;  // ✅ Protezione doppio submit
-
-        async function submitOrder() {
-            // ✅ PREVIENI DOPPIO CLICK
-            if (isSubmitting) {
-                console.log('⚠️ Ordine già in invio...');
-                return;
-            }
+        async function submitOrder(event) {
+            event.preventDefault();
             
-            if (cart.length === 0) {
-                alert(currentLang === 'it' ? 'Il carrello è vuoto!' : 
-                      currentLang === 'de' ? 'Der Warenkorb ist leer!' : 
-                      'Le panier est vide!');
-                return;
-            }
-
-            const pickupDate = document.getElementById('pickup-date').value;
-            const pickupTime = document.getElementById('pickup-time').value;
-
-            if (!pickupDate || !pickupTime) {
-                alert(currentLang === 'it' ? 'Seleziona data e ora di ritiro!' : 
-                      currentLang === 'de' ? 'Wählen Sie Abholdatum und -zeit!' : 
-                      'Sélectionnez la date et l\'heure de retrait!');
-                return;
-            }
-
-            let customerData;
-
-            // Se VIP loggato, usa i dati salvati
-            if (isVIP && vipCustomer) {
-                customerData = {
-                    name: vipCustomer.name,
-                    phone: vipCustomer.phone,
-                    email: vipCustomer.email,
-                    isVIP: true,
-                    vipLevel: vipCustomer.vipLevel
-                };
-            } else if (isGuestMode) {
-                // Ospite anonimo
-                customerData = { 
-                    guest: true,
-                    name: "Ospite",
-                    phone: "",
-                    email: ""
-                };
-            } else {
-                // Cliente normale - valida i campi
-                const name = document.getElementById('customer-name').value;
-                const phone = document.getElementById('customer-phone').value;
-                const email = document.getElementById('customer-email').value;
-
-                if (!name || !phone || !email) {
-                    alert(currentLang === 'it' ? 'Completa tutti i campi!' : 
-                          currentLang === 'de' ? 'Füllen Sie alle Felder aus!' : 
-                          'Remplissez tous les champs!');
-                    return;
-                }
-
-                customerData = { name, phone, email, isVIP: false };
-            }
-
-            // IMPORTANTE: Includi le note speciali nell'ordine
-            const specialNotes = document.getElementById('special-notes').value || '';
-
+            // Prepara dati ordine
             const orderData = {
-                cart,
-                pickupDate,
-                pickupTime,
-                customer: customerData,
-                note: specialNotes,  // ✅ Campo note salvato
-                paymentMethod,
+                cart: cart,
+                pickupDate: document.getElementById('pickup-date').value,
+                pickupTime: document.getElementById('pickup-time').value,
+                note: document.getElementById('special-notes').value || '',
+                paymentMethod: selectedPayment,
                 total: cart.reduce((sum, item) => sum + (item.price * item.quantity), 0),
-                timestamp: new Date().toISOString()
+                customer: isGuestMode ? {
+                    guest: true,
+                    name: 'Ospite',
+                    phone: '',
+                    email: ''
+                } : {
+                    name: document.getElementById('customer-name').value,
+                    phone: document.getElementById('customer-phone').value,
+                    email: document.getElementById('customer-email').value,
+                    isVIP: false
+                }
             };
-
-            console.log('Order submitted:', orderData);
-
-            isSubmitting = true;  // ✅ Blocca altri submit
-
+            
+            console.log('📦 Invio ordine:', orderData);
+            
+            // Disabilita bottone
+            const submitBtn = document.getElementById('submit-order-btn');
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Invio...';
+            
             try {
-                // Invio ordine al backend
-                const response = await fetch(CONFIG.API_URL + '?action=creaOrdine', {
+                const response = await fetch(`${CONFIG.API_URL}?action=creaOrdine`, {
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'text/plain',  // CRITICAL: text/plain evita CORS preflight
+                        'Content-Type': 'text/plain',
                     },
                     body: JSON.stringify(orderData)
                 });
-
+                
                 const result = await response.json();
                 
                 if (result.success) {
-                    showConfirmation(result.orderId || Math.floor(Math.random() * 10000), orderData);
+                    console.log('✅ Ordine creato:', result.orderId);
                     
-                    // Reset cart
+                    // Mostra conferma
+                    alert(`✅ Ordine #${result.orderId} confermato!\n\nRitiro: ${orderData.pickupDate} alle ${orderData.pickupTime}`);
+                    
+                    // Reset
                     cart = [];
-                    document.getElementById('special-notes').value = '';
-                    updateCartUI();
-                    isSubmitting = false;  // ✅ Rilascia lock
+                    updateCart();
+                    closeCheckout();
+                    document.getElementById('checkout-form').reset();
+                    document.getElementById('guest-mode').checked = false;
+                    isGuestMode = false;
+                    toggleGuestMode();
+                    
                 } else {
-                    isSubmitting = false;  // ✅ Rilascia lock
-                    alert('Errore nell\'invio dell\'ordine: ' + (result.error || 'Riprova'));
+                    alert('❌ Errore: ' + (result.error || 'Riprova'));
                 }
             } catch (error) {
-                console.error('Errore:', error);
-                isSubmitting = false;  // ✅ Rilascia lock
-                // Mostra comunque conferma in demo mode
-                showConfirmation(Math.floor(Math.random() * 10000), orderData);
-                cart = [];
-                document.getElementById('special-notes').value = '';
-                updateCartUI();
+                console.error('❌ Errore invio:', error);
+                alert('❌ Errore di connessione. Riprova.');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = `<i class="fas fa-paper-plane"></i> ${getSubmitOrderText()}`;
             }
         }
 
-        function showConfirmation(orderNumber, orderData) {
-            document.getElementById('order-number').textContent = orderNumber;
-            
-            const pickupInfo = currentLang === 'it' ? 
-                `Ritiro: ${orderData.pickupDate} alle ${orderData.pickupTime}` :
-                currentLang === 'de' ?
-                `Abholung: ${orderData.pickupDate} um ${orderData.pickupTime}` :
-                `Retrait: ${orderData.pickupDate} à ${orderData.pickupTime}`;
-            
-            const paymentInfo = orderData.paymentMethod === 'now' ?
-                (currentLang === 'it' ? 'Pagamento: Completato' :
-                 currentLang === 'de' ? 'Zahlung: Abgeschlossen' :
-                 'Paiement: Complété') :
-                (currentLang === 'it' ? 'Pagamento: Al ritiro' :
-                 currentLang === 'de' ? 'Zahlung: Bei Abholung' :
-                 'Paiement: Au retrait');
-
-            document.getElementById('order-details').innerHTML = `
-                <p>${pickupInfo}</p>
-                <p>${paymentInfo}</p>
-                ${orderData.note ? `<p style="margin-top: 0.5rem; font-size: 0.9rem; color: #666;">Note: ${orderData.note}</p>` : ''}
-                <p style="margin-top: 1rem; font-size: 0.9rem; color: #666;">
-                    ${currentLang === 'it' ? 'Riceverai una email di conferma' :
-                      currentLang === 'de' ? 'Sie erhalten eine Bestätigungs-E-Mail' :
-                      'Vous recevrez un email de confirmation'}
-                </p>
-            `;
-
-            document.getElementById('confirmation-modal').classList.add('active');
-        }
-
-        function openFeedback(orderId) {
-            // Salva dati cliente per pre-compilare form
-            const customerData = {
-                name: document.getElementById('customer-name')?.value || '',
-                email: document.getElementById('customer-email')?.value || ''
+        function updateCheckoutTranslations() {
+            const translations = {
+                it: {
+                    checkoutTitle: 'Completa Ordine',
+                    summaryTitle: 'Riepilogo Ordine',
+                    totalLabel: 'Totale:',
+                    guestMode: 'Ordina come Ospite (senza dati)',
+                    nameLabel: 'Nome:',
+                    phoneLabel: 'Telefono:',
+                    emailLabel: 'Email:',
+                    pickupDateLabel: 'Data Ritiro:',
+                    pickupTimeLabel: 'Orario Ritiro:',
+                    notesLabel: 'Note Speciali (opzionale):',
+                    paymentLabel: 'Metodo di Pagamento:',
+                    paymentLater: 'Al Ritiro',
+                    paymentNow: 'Online',
+                    submitOrder: 'Invia Ordine'
+                },
+                de: {
+                    checkoutTitle: 'Bestellung abschließen',
+                    summaryTitle: 'Bestellübersicht',
+                    totalLabel: 'Gesamt:',
+                    guestMode: 'Als Gast bestellen (ohne Daten)',
+                    nameLabel: 'Name:',
+                    phoneLabel: 'Telefon:',
+                    emailLabel: 'E-Mail:',
+                    pickupDateLabel: 'Abholdatum:',
+                    pickupTimeLabel: 'Abholzeit:',
+                    notesLabel: 'Besondere Wünsche (optional):',
+                    paymentLabel: 'Zahlungsmethode:',
+                    paymentLater: 'Bei Abholung',
+                    paymentNow: 'Online',
+                    submitOrder: 'Bestellung senden'
+                },
+                fr: {
+                    checkoutTitle: 'Finaliser la Commande',
+                    summaryTitle: 'Récapitulatif',
+                    totalLabel: 'Total:',
+                    guestMode: 'Commander en tant qu\'Invité (sans données)',
+                    nameLabel: 'Nom:',
+                    phoneLabel: 'Téléphone:',
+                    emailLabel: 'Email:',
+                    pickupDateLabel: 'Date de Retrait:',
+                    pickupTimeLabel: 'Heure de Retrait:',
+                    notesLabel: 'Notes Spéciales (optionnel):',
+                    paymentLabel: 'Méthode de Paiement:',
+                    paymentLater: 'Au Retrait',
+                    paymentNow: 'En Ligne',
+                    submitOrder: 'Envoyer la Commande'
+                }
             };
-            localStorage.setItem('customer_data', JSON.stringify(customerData));
             
-            // Apri pagina feedback
-            window.open(`feedback.html?orderId=${orderId}`, '_blank', 'width=600,height=800');
+            const t = translations[currentLang];
+            
+            // Helper per update sicuro
+            const updateText = (id, text) => {
+                const el = document.getElementById(id);
+                if (el) el.textContent = text;
+            };
+            
+            updateText('checkout-title', t.checkoutTitle);
+            updateText('summary-title', t.summaryTitle);
+            updateText('total-label-checkout', t.totalLabel);
+            updateText('guest-mode-label', t.guestMode);
+            updateText('name-label', t.nameLabel);
+            updateText('phone-label', t.phoneLabel);
+            updateText('email-label', t.emailLabel);
+            updateText('pickup-date-label', t.pickupDateLabel);
+            updateText('pickup-time-label', t.pickupTimeLabel);
+            updateText('notes-label', t.notesLabel);
+            updateText('payment-label', t.paymentLabel);
+            updateText('payment-later-text', t.paymentLater);
+            updateText('payment-now-text', t.paymentNow);
+            updateText('submit-order-text', t.submitOrder);
         }
 
-        function closeModal() {
-            document.getElementById('confirmation-modal').classList.remove('active');
+        function getSubmitOrderText() {
+            return {
+                it: 'Invia Ordine',
+                de: 'Bestellung senden',
+                fr: 'Envoyer la Commande'
+            }[currentLang];
         }
 
-        function submitFeedback(event) {
-            event.preventDefault();
-            const feedbackText = document.getElementById('feedback-text').value;
-            const isAnonymous = document.getElementById('anonymous-feedback').checked;
-
-            console.log('Feedback submitted:', {
-                text: feedbackText,
-                anonymous: isAnonymous,
-                timestamp: new Date().toISOString()
-            });
-
-            alert(currentLang === 'it' ? 'Grazie per il tuo feedback!' :
-                  currentLang === 'de' ? 'Danke für Ihr Feedback!' :
-                  'Merci pour votre feedback!');
-
-            document.getElementById('feedback-text').value = '';
-            document.getElementById('anonymous-feedback').checked = false;
+        // Switch Language
+        function switchLang(lang) {
+            currentLang = lang;
+            document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            // Reload displays
+            displayTodayProducts();
+            displayWeekMenu();
+            loadRecipeOfWeek();
+            updateCart();
+            updateCheckoutTranslations();
         }
 
-        // Initialize language on load
-        updateUILanguage();
+        // Helper: Get Name
+        function getName(product) {
+            if (typeof product.nome === 'object' && product.nome[currentLang]) {
+                return product.nome[currentLang];
+            }
+            return typeof product.nome === 'string' ? product.nome : 'Prodotto';
+        }
+
+        // Helper: Get Description
+        function getDescription(product) {
+            if (typeof product.descrizione === 'object' && product.descrizione[currentLang]) {
+                return product.descrizione[currentLang];
+            }
+            return typeof product.descrizione === 'string' ? product.descrizione : '';
+        }
+
+        // Helper: Get Add Text
+        function getAddText() {
+            return {
+                it: 'Aggiungi',
+                de: 'Hinzufügen',
+                fr: 'Ajouter'
+            }[currentLang];
+        }
+
+        // Helper: Get Empty Cart Text
+        function getEmptyCartText() {
+            return {
+                it: 'Il carrello è vuoto',
+                de: 'Der Warenkorb ist leer',
+                fr: 'Le panier est vide'
+            }[currentLang];
+        }
     </script>
+
 </body>
 </html>
