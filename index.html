@@ -47,6 +47,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            gap: 1rem;
         }
 
         .logo-section h1 {
@@ -68,6 +69,7 @@
         .lang-switcher {
             display: flex;
             gap: 0.5rem;
+            flex-wrap: wrap;
         }
 
         .lang-btn {
@@ -187,6 +189,16 @@
             gap: 0.5rem;
             margin-bottom: 1.5rem;
             overflow-x: auto;
+            padding-bottom: 0.25rem;
+        }
+
+        .week-tabs::-webkit-scrollbar {
+            height: 6px;
+        }
+
+        .week-tabs::-webkit-scrollbar-thumb {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 999px;
         }
 
         .week-tab {
@@ -343,6 +355,7 @@
             align-items: center;
             padding: 0.75rem;
             border-bottom: 1px solid var(--border);
+            gap: 0.75rem;
         }
 
         .cart-item-info {
@@ -629,6 +642,7 @@
         @media (max-width: 968px) {
             .container {
                 grid-template-columns: 1fr;
+                padding: 0 1.5rem;
             }
 
             .sidebar {
@@ -638,12 +652,46 @@
             .products-grid {
                 grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
             }
+
+            .header-actions {
+                width: 100%;
+                justify-content: space-between;
+            }
+
+            .vip-badge {
+                justify-content: center;
+                padding: 0.4rem 0.75rem;
+            }
         }
 
         @media (max-width: 640px) {
             .header-container {
                 flex-direction: column;
-                gap: 1rem;
+                align-items: stretch;
+                padding: 0 1.25rem;
+                gap: 0.75rem;
+            }
+
+            .logo-section h1 {
+                font-size: 1.4rem;
+            }
+
+            .logo-section p {
+                font-size: 0.85rem;
+            }
+
+            .header-actions {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 0.75rem;
+            }
+
+            .lang-switcher {
+                justify-content: center;
+            }
+
+            .vip-badge {
+                width: 100%;
             }
 
             .hero h2 {
@@ -656,6 +704,98 @@
 
             .products-grid {
                 grid-template-columns: 1fr;
+            }
+
+            .menu-section,
+            .feedback-section,
+            .cart-section,
+            .booking-section {
+                padding: 1.25rem;
+            }
+
+            .cart-item {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .qty-btn {
+                width: 32px;
+                height: 32px;
+            }
+
+            .week-tab {
+                padding: 0.6rem 1rem;
+            }
+
+            .whatsapp-btn {
+                width: 52px;
+                height: 52px;
+                font-size: 1.6rem;
+            }
+        }
+
+        @media (max-width: 520px) {
+            .hero {
+                padding: 2rem 1.25rem;
+            }
+
+            .recipe-card {
+                margin: 1rem auto;
+            }
+
+            .section-title {
+                font-size: 1.6rem;
+            }
+
+            .product-actions {
+                flex-direction: column;
+            }
+
+            .btn {
+                padding: 0.7rem 1rem;
+            }
+
+            .payment-choice {
+                flex-direction: column;
+            }
+
+            .modal-content {
+                width: calc(100% - 2rem);
+                max-width: none;
+                padding: 1.5rem;
+            }
+        }
+
+        @media (max-width: 420px) {
+            .header {
+                padding: 0.75rem 0;
+            }
+
+            .logo-section h1 {
+                font-size: 1.25rem;
+            }
+
+            .section-title {
+                font-size: 1.4rem;
+            }
+
+            .lang-btn {
+                font-size: 1rem;
+                padding: 0.4rem 0.5rem;
+            }
+
+            .cart-item-qty {
+                width: 100%;
+                justify-content: space-between;
+            }
+
+            .cart-total {
+                font-size: 1.1rem;
+            }
+
+            .whatsapp-btn {
+                bottom: 16px;
+                right: 16px;
             }
         }
 
@@ -712,9 +852,9 @@
             </div>
             <div class="header-actions">
                 <div class="lang-switcher">
-                    <button class="lang-btn active" onclick="switchLang('it')">🇮🇹</button>
-                    <button class="lang-btn" onclick="switchLang('de')">🇨🇭</button>
-                    <button class="lang-btn" onclick="switchLang('fr')">🇫🇷</button>
+                    <button class="lang-btn active" onclick="switchLang('it', event)">🇮🇹</button>
+                    <button class="lang-btn" onclick="switchLang('de', event)">🇨🇭</button>
+                    <button class="lang-btn" onclick="switchLang('fr', event)">🇫🇷</button>
                 </div>
                 <div class="vip-badge" onclick="toggleVIPLogin()">
                     <i class="fas fa-crown"></i>
@@ -758,13 +898,13 @@
             <section class="menu-section" style="margin-top: 2rem;">
                 <h2 class="section-title" id="menu-week-title">📅 Menu della Settimana</h2>
                 <div class="week-tabs">
-                    <button class="week-tab active" onclick="showWeekDay('monday')">Lunedì</button>
-                    <button class="week-tab" onclick="showWeekDay('tuesday')">Martedì</button>
-                    <button class="week-tab" onclick="showWeekDay('wednesday')">Mercoledì</button>
-                    <button class="week-tab" onclick="showWeekDay('thursday')">Giovedì</button>
-                    <button class="week-tab" onclick="showWeekDay('friday')">Venerdì</button>
-                    <button class="week-tab" onclick="showWeekDay('saturday')">Sabato</button>
-                    <button class="week-tab" onclick="showWeekDay('sunday')">Domenica</button>
+                    <button class="week-tab active" onclick="showWeekDay('monday', event)">Lunedì</button>
+                    <button class="week-tab" onclick="showWeekDay('tuesday', event)">Martedì</button>
+                    <button class="week-tab" onclick="showWeekDay('wednesday', event)">Mercoledì</button>
+                    <button class="week-tab" onclick="showWeekDay('thursday', event)">Giovedì</button>
+                    <button class="week-tab" onclick="showWeekDay('friday', event)">Venerdì</button>
+                    <button class="week-tab" onclick="showWeekDay('saturday', event)">Sabato</button>
+                    <button class="week-tab" onclick="showWeekDay('sunday', event)">Domenica</button>
                 </div>
                 <div class="products-grid" id="week-products">
                     <!-- Weekly products loaded via JS -->
@@ -861,11 +1001,11 @@
                 <div class="payment-options">
                     <h4 id="payment-method-label">Metodo di Pagamento:</h4>
                     <div class="payment-choice">
-                        <button type="button" class="active" onclick="selectPaymentMethod('now')">
+                        <button type="button" class="active" onclick="selectPaymentMethod('now', event)">
                             <i class="fas fa-credit-card"></i><br>
                             <span id="pay-now-btn">Paga Ora</span>
                         </button>
-                        <button type="button" onclick="selectPaymentMethod('later')">
+                        <button type="button" onclick="selectPaymentMethod('later', event)">
                             <i class="fas fa-money-bill-wave"></i><br>
                             <span id="pay-later-btn">Paga al Ritiro</span>
                         </button>
@@ -934,7 +1074,7 @@
     <script>
         // Configuration
         const CONFIG = {
-            API_URL: 'https://script.google.com/macros/s/AKfycbzmt8l-QWoyj9SboaM6fPjflkJ48ugt6-1bW-52eBw6ozDOudZxqH_JM3CF664u_FxI/exec',
+            API_URL: 'https://script.google.com/macros/s/AKfycbzC8NWtJ43WLR2LcCKn40uc0cRchQsQSl2st8sYQK2banTSkq1TXPY3edIrFJQB01idWQ/exec',
             restaurantName: {
                 it: "Ristorante Demo",
                 de: "Restaurant Demo",
@@ -1052,7 +1192,7 @@
         // ✅ NUOVO: Carica Ricetta della Settimana
         async function loadRecipeOfWeek() {
             try {
-                const response = await fetch(CONFIG.API_URL + '?action=getMenuData');
+                const response = await fetch(CONFIG.API_URL + '?action=getPublicConfig');
                 const result = await response.json();
                 
                 if (result.recipeWeekId && result.recipeWeekName) {
@@ -1186,14 +1326,15 @@
             }
         }
 
-        function switchLang(lang) {
+        function switchLang(lang, event) {
             currentLang = lang;
             document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
-            event.target.classList.add('active');
+            event?.target?.classList.add('active');
             updateUILanguage();
             updateRecipeButton();  // ✅ Aggiorna bottone ricetta
             loadRecipeOfWeek();    // ✅ Ricarica ricetta con nuova lingua
             displayProducts(); // Ricarica i prodotti con la nuova lingua
+            updateCartUI();
         }
 
         function updateUILanguage() {
@@ -1295,7 +1436,10 @@
 
             const t = translations[currentLang];
             document.getElementById('vip-status').textContent = t.vipStatus;
-            document.getElementById('hero-title').textContent = t.heroTitle;
+            const heroTitle = document.getElementById('hero-title');
+            if (heroTitle) {
+                heroTitle.textContent = t.heroTitle;
+            }
             document.getElementById('menu-today-title').textContent = t.menuTodayTitle;
             document.getElementById('recipe-title').textContent = t.recipeTitle;
             document.getElementById('menu-week-title').textContent = t.menuWeekTitle;
@@ -1348,7 +1492,7 @@
             showWeekDay(currentWeekDay);
         }
 
-        function showWeekDay(day) {
+        function showWeekDay(day, event) {
             currentWeekDay = day;
             document.querySelectorAll('.week-tab').forEach(tab => tab.classList.remove('active'));
             event?.target?.classList.add('active');
@@ -1428,9 +1572,12 @@
             if (existingItem) {
                 existingItem.quantity++;
             } else {
+                const nomeIt = (typeof product.nome === 'object' && product.nome.it) ? product.nome.it : (product.nome || 'Prodotto');
+                const nomeLocale = (typeof product.nome === 'object' && product.nome[currentLang]) ? product.nome[currentLang] : nomeIt;
                 cart.push({
                     id: productId,
-                    name: product.nome[currentLang],
+                    name: nomeIt,
+                    label: nomeLocale,
                     price: product.prezzo,
                     quantity: 1
                 });
@@ -1462,10 +1609,15 @@
                 return;
             }
 
-            cartItems.innerHTML = cart.map(item => `
+            cartItems.innerHTML = cart.map(item => {
+                const product = allProducts.find(p => p.id === item.id);
+                const localizedName = product && typeof product.nome === 'object'
+                    ? (product.nome[currentLang] || product.nome.it)
+                    : (item.label || item.name);
+                return `
                 <div class="cart-item">
                     <div class="cart-item-info">
-                        <div class="cart-item-name">${item.name}</div>
+                        <div class="cart-item-name">${localizedName}</div>
                         <div class="cart-item-price">CHF ${item.price.toFixed(2)}</div>
                     </div>
                     <div class="cart-item-qty">
@@ -1474,7 +1626,8 @@
                         <button class="qty-btn" onclick="updateQuantity(${item.id}, 1)">+</button>
                     </div>
                 </div>
-            `).join('');
+            `;
+            }).join('');
 
             const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
             cartTotal.textContent = `CHF ${total.toFixed(2)}`;
@@ -1503,10 +1656,10 @@
             document.getElementById('pickup-date').value = minDate;
         }
 
-        function selectPaymentMethod(method) {
+        function selectPaymentMethod(method, event) {
             paymentMethod = method;
             document.querySelectorAll('.payment-choice button').forEach(btn => btn.classList.remove('active'));
-            event.target.classList.add('active');
+            event?.target?.classList.add('active');
 
             const stripeElement = document.getElementById('stripe-payment-element');
             
@@ -1613,7 +1766,12 @@
             const specialNotes = document.getElementById('special-notes').value || '';
 
             const orderData = {
-                cart,
+                cart: cart.map(item => ({
+                    id: item.id,
+                    name: item.name,
+                    price: item.price,
+                    quantity: item.quantity
+                })),
                 pickupDate,
                 pickupTime,
                 customer: customerData,
