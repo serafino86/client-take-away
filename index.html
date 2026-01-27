@@ -104,6 +104,30 @@
             animation: pulse 2s infinite;
         }
 
+        .dashboard-link {
+            background: #111827;
+            color: white;
+            padding: 0.5rem 0.9rem;
+            border-radius: 999px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            box-shadow: 0 6px 14px rgba(17, 24, 39, 0.2);
+        }
+
+        .dashboard-link:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 8px 18px rgba(17, 24, 39, 0.3);
+        }
+
+        .dashboard-link i {
+            font-size: 0.95rem;
+        }
+
         @keyframes pulse {
             0%, 100% { transform: scale(1); }
             50% { transform: scale(1.2); }
@@ -694,6 +718,10 @@
                 width: 100%;
             }
 
+            .dashboard-link {
+                justify-content: center;
+            }
+
             .hero h2 {
                 font-size: 1.8rem;
             }
@@ -784,6 +812,11 @@
                 padding: 0.4rem 0.5rem;
             }
 
+            .dashboard-link {
+                font-size: 0.75rem;
+                padding: 0.4rem 0.75rem;
+            }
+
             .cart-item-qty {
                 width: 100%;
                 justify-content: space-between;
@@ -856,6 +889,10 @@
                     <button class="lang-btn" onclick="switchLang('de', event)">🇨🇭</button>
                     <button class="lang-btn" onclick="switchLang('fr', event)">🇫🇷</button>
                 </div>
+                <a class="dashboard-link" href="dashboard.html" target="_blank" rel="noopener">
+                    <i class="fas fa-chart-line"></i>
+                    Dashboard
+                </a>
                 <div class="vip-badge" onclick="toggleVIPLogin()">
                     <i class="fas fa-crown"></i>
                     <span id="vip-status">Login VIP</span>
