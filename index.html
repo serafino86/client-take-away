@@ -1,0 +1,1425 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>TakeAway Manager - Ordina Online</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        :root {
+            --primary: #4299e1;
+            --primary-dark: #2c7fb8;
+            --success: #48bb78;
+            --danger: #f56565;
+            --warning: #ed8936;
+            --purple: #9f7aea;
+            --bg: #f7fafc;
+            --card-bg: #ffffff;
+            --text: #2d3748;
+            --text-light: #718096;
+            --border: #e2e8f0;
+            --shadow: 0 2px 8px rgba(0,0,0,0.1);
+            --shadow-lg: 0 4px 16px rgba(0,0,0,0.15);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            overflow-x: hidden;
+            padding-bottom: 80px;
+        }
+
+        /* ===== HEADER STICKY ===== */
+        .header {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            padding: 1rem;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1.25rem;
+            font-weight: 700;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 0.75rem;
+            align-items: center;
+        }
+
+        .lang-btn {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            padding: 0.5rem 0.75rem;
+            border-radius: 8px;
+            color: white;
+            cursor: pointer;
+            font-size: 1.25rem;
+            transition: all 0.2s;
+        }
+
+        .lang-btn:active {
+            transform: scale(0.95);
+            background: rgba(255,255,255,0.3);
+        }
+
+        .lang-btn.active {
+            background: white;
+            color: var(--primary);
+        }
+
+        /* ===== CART BADGE FLOATING ===== */
+        .cart-badge {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1000;
+            background: var(--success);
+            color: white;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            box-shadow: var(--shadow-lg);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .cart-badge:active {
+            transform: scale(0.9);
+        }
+
+        .cart-badge .badge-count {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: var(--danger);
+            color: white;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: 700;
+            border: 2px solid white;
+        }
+
+        /* ===== CART SLIDE-IN PANEL ===== */
+        .cart-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 999;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s;
+        }
+
+        .cart-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .cart-panel {
+            position: fixed;
+            top: 0;
+            right: -100%;
+            width: 90%;
+            max-width: 400px;
+            height: 100%;
+            background: white;
+            z-index: 1000;
+            transition: right 0.3s;
+            display: flex;
+            flex-direction: column;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .cart-panel.active {
+            right: 0;
+        }
+
+        .cart-header {
+            padding: 1.5rem;
+            background: var(--primary);
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .cart-header h2 {
+            font-size: 1.25rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .close-cart {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 0.5rem;
+        }
+
+        .cart-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1rem;
+        }
+
+        .cart-footer {
+            padding: 1.5rem;
+            border-top: 2px solid var(--border);
+            background: var(--bg);
+        }
+
+        .cart-total {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--success);
+            margin-bottom: 1rem;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        /* ===== MAIN CONTAINER ===== */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem;
+        }
+
+        /* ===== SECTION ===== */
+        .section {
+            margin-bottom: 2rem;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        /* ===== HERO RECIPE CARD ===== */
+        .hero-recipe {
+            background: linear-gradient(135deg, var(--purple) 0%, #667eea 100%);
+            border-radius: 16px;
+            padding: 1.5rem;
+            color: white;
+            box-shadow: var(--shadow-lg);
+            margin-bottom: 1.5rem;
+        }
+
+        .hero-recipe h3 {
+            font-size: 1.25rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .hero-recipe p {
+            opacity: 0.9;
+            margin-bottom: 1rem;
+        }
+
+        .hero-recipe .price {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        /* ===== PRODUCT CARD ===== */
+        .product-card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            box-shadow: var(--shadow);
+            transition: transform 0.2s;
+        }
+
+        .product-card:active {
+            transform: scale(0.98);
+        }
+
+        .product-name {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--text);
+        }
+
+        .product-description {
+            font-size: 0.9rem;
+            color: var(--text-light);
+            margin-bottom: 0.75rem;
+        }
+
+        .product-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .product-price {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--success);
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 1rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            justify-content: center;
+        }
+
+        .btn:active {
+            transform: scale(0.95);
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+
+        .btn-full {
+            width: 100%;
+        }
+
+        /* ===== WEEK DAY CARD ===== */
+        .week-day {
+            background: var(--card-bg);
+            border-radius: 12px;
+            margin-bottom: 1rem;
+            box-shadow: var(--shadow);
+            overflow: hidden;
+        }
+
+        .week-day-header {
+            padding: 1rem;
+            background: var(--bg);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .week-day-header:active {
+            background: var(--border);
+        }
+
+        .week-day-title {
+            font-weight: 600;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .week-day-count {
+            color: var(--text-light);
+            font-size: 0.9rem;
+        }
+
+        .week-day-icon {
+            transition: transform 0.3s;
+        }
+
+        .week-day.expanded .week-day-icon {
+            transform: rotate(180deg);
+        }
+
+        .week-day-body {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s;
+        }
+
+        .week-day.expanded .week-day-body {
+            max-height: 2000px;
+        }
+
+        .week-day-products {
+            padding: 1rem;
+        }
+
+        /* ===== CART ITEM ===== */
+        .cart-item {
+            background: var(--bg);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .cart-item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 0.5rem;
+        }
+
+        .cart-item-name {
+            font-weight: 600;
+            flex: 1;
+        }
+
+        .cart-item-remove {
+            background: var(--danger);
+            color: white;
+            border: none;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 0.75rem;
+        }
+
+        .cart-item-controls {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .cart-item-quantity {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .qty-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 700;
+        }
+
+        .qty-value {
+            min-width: 30px;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .cart-item-price {
+            font-weight: 700;
+            color: var(--success);
+        }
+
+        /* ===== EMPTY STATE ===== */
+        .empty-state {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: var(--text-light);
+        }
+
+        .empty-state i {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            opacity: 0.3;
+        }
+
+        /* ===== LOADING ===== */
+        .loading {
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .spinner {
+            border: 3px solid var(--border);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* ===== CHECKOUT MODAL ===== */
+        .checkout-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 2000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+
+        .checkout-modal.active {
+            display: flex;
+        }
+
+        .checkout-content {
+            background: white;
+            border-radius: 16px;
+            width: 100%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .checkout-header {
+            padding: 1.5rem;
+            background: var(--primary);
+            color: white;
+            border-radius: 16px 16px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .checkout-body {
+            padding: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.2s;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .payment-options {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .payment-option {
+            flex: 1;
+            padding: 1rem;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.2s;
+        }
+
+        .payment-option:hover {
+            border-color: var(--primary);
+        }
+
+        .payment-option.selected {
+            border-color: var(--primary);
+            background: var(--primary);
+            color: white;
+        }
+
+        .order-summary {
+            background: var(--bg);
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+        }
+
+        .summary-total {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--success);
+            padding-top: 0.5rem;
+            border-top: 2px solid var(--border);
+            margin-top: 0.5rem;
+        }
+
+        .guest-mode-toggle {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem;
+            background: var(--bg);
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            cursor: pointer;
+        }
+
+        .guest-mode-toggle input {
+            cursor: pointer;
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (min-width: 768px) {
+            .cart-panel {
+                width: 400px;
+            }
+            
+            .products-grid {
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 1rem;
+            }
+            
+            .product-card {
+                margin-bottom: 0;
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .products-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- HEADER STICKY -->
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">
+                <i class="fas fa-utensils"></i>
+                <span>TakeAway</span>
+            </div>
+            <div class="header-actions">
+                <button class="lang-btn active" onclick="switchLang('it')">🇮🇹</button>
+                <button class="lang-btn" onclick="switchLang('de')">🇨🇭</button>
+                <button class="lang-btn" onclick="switchLang('fr')">🇫🇷</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN CONTAINER -->
+    <div class="container">
+        
+        <!-- RICETTA SETTIMANA -->
+        <section class="section" id="recipe-section" style="display: none;">
+            <div class="hero-recipe" id="hero-recipe">
+                <div style="text-align: center; font-size: 1.5rem; margin-bottom: 0.5rem;">🌟</div>
+                <h3 id="recipe-title">Ricetta della Settimana</h3>
+                <div id="recipe-name" style="font-size: 1.5rem; font-weight: 700; margin-bottom: 0.5rem;">Caricamento...</div>
+                <p id="recipe-description">Caricamento descrizione...</p>
+                <div class="price" id="recipe-price">CHF --</div>
+                <button class="btn btn-success btn-full" onclick="addRecipeToCart()">
+                    <i class="fas fa-plus"></i>
+                    <span id="recipe-add-text">Aggiungi al Carrello</span>
+                </button>
+            </div>
+        </section>
+
+        <!-- MENU OGGI -->
+        <section class="section">
+            <h2 class="section-title">
+                <i class="fas fa-calendar-day"></i>
+                <span id="menu-today-title">Menu del Giorno</span>
+            </h2>
+            <div id="today-products" class="products-grid">
+                <div class="loading">
+                    <div class="spinner"></div>
+                    <p>Caricamento prodotti...</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- MENU SETTIMANA -->
+        <section class="section">
+            <h2 class="section-title">
+                <i class="fas fa-calendar-week"></i>
+                <span id="menu-week-title">Menu della Settimana</span>
+            </h2>
+            <div id="week-menu">
+                <!-- Giorni settimana popolati via JS -->
+            </div>
+        </section>
+
+    </div>
+
+    <!-- CART FLOATING BADGE -->
+    <div class="cart-badge" onclick="toggleCart()" id="cart-badge">
+        <i class="fas fa-shopping-cart"></i>
+        <span class="badge-count" id="cart-count">0</span>
+    </div>
+
+    <!-- CART OVERLAY -->
+    <div class="cart-overlay" id="cart-overlay" onclick="toggleCart()"></div>
+
+    <!-- CART SLIDE-IN PANEL -->
+    <div class="cart-panel" id="cart-panel">
+        <div class="cart-header">
+            <h2>
+                <i class="fas fa-shopping-cart"></i>
+                <span id="cart-title">Carrello</span>
+            </h2>
+            <button class="close-cart" onclick="toggleCart()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        
+        <div class="cart-body" id="cart-body">
+            <div class="empty-state">
+                <i class="fas fa-shopping-cart"></i>
+                <p id="empty-cart-text">Il carrello è vuoto</p>
+            </div>
+        </div>
+        
+        <div class="cart-footer">
+            <div class="cart-total">
+                <span id="total-label">Totale:</span>
+                <span id="cart-total">CHF 0.00</span>
+            </div>
+            <button class="btn btn-success btn-full" onclick="proceedToCheckout()">
+                <i class="fas fa-check-circle"></i>
+                <span id="checkout-btn">Procedi all'Ordine</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- CHECKOUT MODAL -->
+    <div class="checkout-modal" id="checkout-modal">
+        <div class="checkout-content">
+            <div class="checkout-header">
+                <h2>
+                    <i class="fas fa-check-circle"></i>
+                    <span id="checkout-title">Completa Ordine</span>
+                </h2>
+                <button class="close-cart" onclick="closeCheckout()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div class="checkout-body">
+                <!-- Order Summary -->
+                <div class="order-summary">
+                    <h3 style="margin-bottom: 1rem;">📋 <span id="summary-title">Riepilogo Ordine</span></h3>
+                    <div id="order-items-summary"></div>
+                    <div class="summary-total">
+                        <div class="summary-row">
+                            <span id="total-label-checkout">Totale:</span>
+                            <span id="checkout-total">CHF 0.00</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Guest Mode Toggle -->
+                <label class="guest-mode-toggle">
+                    <input type="checkbox" id="guest-mode" onchange="toggleGuestMode()">
+                    <span id="guest-mode-label">Ordina come Ospite (senza dati)</span>
+                </label>
+
+                <!-- Customer Form -->
+                <form id="checkout-form" onsubmit="submitOrder(event)">
+                    <div class="form-group">
+                        <label class="form-label" id="name-label">Nome:</label>
+                        <input type="text" class="form-input" id="customer-name" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" id="phone-label">Telefono:</label>
+                        <input type="tel" class="form-input" id="customer-phone" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" id="email-label">Email:</label>
+                        <input type="email" class="form-input" id="customer-email" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" id="pickup-date-label">Data Ritiro:</label>
+                        <input type="date" class="form-input" id="pickup-date" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" id="pickup-time-label">Orario Ritiro:</label>
+                        <input type="time" class="form-input" id="pickup-time" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" id="notes-label">Note Speciali (opzionale):</label>
+                        <textarea class="form-input" id="special-notes" rows="3" placeholder="Es: allergie, preferenze..."></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" id="payment-label">Metodo di Pagamento:</label>
+                        <div class="payment-options">
+                            <div class="payment-option selected" onclick="selectPayment('later')" id="payment-later">
+                                <i class="fas fa-money-bill"></i>
+                                <div id="payment-later-text">Al Ritiro</div>
+                            </div>
+                            <div class="payment-option" onclick="selectPayment('now')" id="payment-now">
+                                <i class="fas fa-credit-card"></i>
+                                <div id="payment-now-text">Online</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-success btn-full" id="submit-order-btn">
+                        <i class="fas fa-paper-plane"></i>
+                        <span id="submit-order-text">Invia Ordine</span>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Configuration
+        const CONFIG = {
+            API_URL: 'https://script.google.com/macros/s/AKfycbzC8NWtJ43WLR2LcCKn40uc0cRchQsQSl2st8sYQK2banTSkq1TXPY3edIrFJQB01idWQ/exec',
+        };
+
+        // State
+        let currentLang = 'it';
+        let allProducts = [];
+        let cart = [];
+        let weekProducts = {};
+
+        // Init
+        document.addEventListener('DOMContentLoaded', () => {
+            loadProducts();
+            loadRecipeOfWeek();
+        });
+
+        // Load Products
+        async function loadProducts() {
+            try {
+                const response = await fetch(`${CONFIG.API_URL}?action=getProdotti`);
+                const result = await response.json();
+                
+                if (result.prodotti) {
+                    allProducts = result.prodotti;
+                    displayTodayProducts();
+                    displayWeekMenu();
+                }
+            } catch (error) {
+                console.error('Errore caricamento prodotti:', error);
+            }
+        }
+
+        // Display Today Products
+        function displayTodayProducts() {
+            const today = new Date();
+            const dayNames = ['domenica', 'lunedi', 'martedi', 'mercoledi', 'giovedi', 'venerdi', 'sabato'];
+            const currentDay = dayNames[today.getDay()];
+            
+            const todayProducts = allProducts.filter(p => {
+                if (!p.disponibile) return false;
+                
+                // ✅ NUOVO: Supporta oggetto giorni {lunedi: true, martedi: false, ...}
+                if (p.giorni && typeof p.giorni === 'object') {
+                    return p.giorni[currentDay] === true;
+                }
+                
+                return false;
+            });
+            
+            const container = document.getElementById('today-products');
+            
+            if (todayProducts.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-info-circle"></i>
+                        <p>Nessun prodotto disponibile oggi</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = todayProducts.map(product => {
+                const nome = getName(product);
+                const descrizione = getDescription(product);
+                
+                return `
+                    <div class="product-card">
+                        <div class="product-name">${nome}</div>
+                        <div class="product-description">${descrizione}</div>
+                        <div class="product-footer">
+                            <div class="product-price">CHF ${product.prezzo.toFixed(2)}</div>
+                            <button class="btn btn-primary" onclick="addToCart(${product.id})">
+                                <i class="fas fa-plus"></i>
+                                ${getAddText()}
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Display Week Menu
+        function displayWeekMenu() {
+            const days = [
+                {key: 'lunedi', label: 'Lunedì', icon: '📅'},
+                {key: 'martedi', label: 'Martedì', icon: '📅'},
+                {key: 'mercoledi', label: 'Mercoledì', icon: '📅'},
+                {key: 'giovedi', label: 'Giovedì', icon: '📅'},
+                {key: 'venerdi', label: 'Venerdì', icon: '📅'},
+                {key: 'sabato', label: 'Sabato', icon: '📅'},
+                {key: 'domenica', label: 'Domenica', icon: '📅'}
+            ];
+            
+            // ✅ Group products by day usando oggetto giorni
+            days.forEach(day => {
+                weekProducts[day.key] = allProducts.filter(p => {
+                    if (!p.disponibile) return false;
+                    if (p.giorni && typeof p.giorni === 'object') {
+                        return p.giorni[day.key] === true;
+                    }
+                    return false;
+                });
+            });
+            
+            const container = document.getElementById('week-menu');
+            container.innerHTML = days.map(day => {
+                const products = weekProducts[day.key] || [];
+                const count = products.length;
+                
+                return `
+                    <div class="week-day" id="day-${day.key}">
+                        <div class="week-day-header" onclick="toggleDay('${day.key}')">
+                            <div class="week-day-title">
+                                <span>${day.icon}</span>
+                                <span>${day.label}</span>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                <span class="week-day-count">${count} prodotti</span>
+                                <i class="fas fa-chevron-down week-day-icon"></i>
+                            </div>
+                        </div>
+                        <div class="week-day-body">
+                            <div class="week-day-products">
+                                ${products.map(product => {
+                                    const nome = getName(product);
+                                    const descrizione = getDescription(product);
+                                    
+                                    return `
+                                        <div class="product-card">
+                                            <div class="product-name">${nome}</div>
+                                            <div class="product-description">${descrizione}</div>
+                                            <div class="product-footer">
+                                                <div class="product-price">CHF ${product.prezzo.toFixed(2)}</div>
+                                                <button class="btn btn-primary" onclick="addToCart(${product.id})">
+                                                    <i class="fas fa-plus"></i>
+                                                    ${getAddText()}
+                                                </button>
+                                            </div>
+                                        </div>
+                                    `;
+                                }).join('')}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Toggle Day
+        function toggleDay(day) {
+            const element = document.getElementById(`day-${day}`);
+            element.classList.toggle('expanded');
+        }
+
+        // Load Recipe of Week
+        async function loadRecipeOfWeek() {
+            try {
+                const response = await fetch(CONFIG.API_URL + '?action=getConfig');
+                const result = await response.json();
+                
+                if (result.config && result.config.recipeWeekId) {
+                    const recipe = allProducts.find(p => p.id == result.config.recipeWeekId);
+                    
+                    if (recipe) {
+                        document.getElementById('recipe-section').style.display = 'block';
+                        
+                        const nome = getName(recipe);
+                        const descrizione = getDescription(recipe);
+                        
+                        document.getElementById('recipe-name').textContent = nome;
+                        document.getElementById('recipe-description').textContent = descrizione;
+                        document.getElementById('recipe-price').textContent = `CHF ${recipe.prezzo.toFixed(2)}`;
+                        
+                        window.recipeOfWeekId = recipe.id;
+                    } else {
+                        // Ricetta configurata ma non trovata nei prodotti
+                        document.getElementById('recipe-section').style.display = 'none';
+                    }
+                } else {
+                    // Nessuna ricetta configurata
+                    document.getElementById('recipe-section').style.display = 'none';
+                }
+            } catch (error) {
+                console.log('Ricetta settimana non disponibile');
+                document.getElementById('recipe-section').style.display = 'none';
+            }
+        }
+
+        function addRecipeToCart() {
+            if (window.recipeOfWeekId) {
+                addToCart(window.recipeOfWeekId);
+            }
+        }
+
+        // Add to Cart
+        function addToCart(productId) {
+            const product = allProducts.find(p => p.id === productId);
+            if (!product) return;
+            
+            const existing = cart.find(item => item.id === productId);
+            
+            if (existing) {
+                existing.quantity++;
+            } else {
+                // ✅ IMPORTANTE: Salva sempre nome IT per compatibilità backend
+                cart.push({
+                    id: product.id,
+                    name: product.nome.it,  // ✅ Nome italiano sempre
+                    nameDisplay: getName(product),  // Nome tradotto per display
+                    price: product.prezzo,
+                    quantity: 1
+                });
+            }
+            
+            updateCart();
+            
+            // Feedback visivo
+            const badge = document.getElementById('cart-badge');
+            badge.style.transform = 'scale(1.2)';
+            setTimeout(() => {
+                badge.style.transform = 'scale(1)';
+            }, 200);
+        }
+
+        // Remove from Cart
+        function removeFromCart(productId) {
+            cart = cart.filter(item => item.id !== productId);
+            updateCart();
+        }
+
+        // Update Quantity
+        function updateQuantity(productId, delta) {
+            const item = cart.find(item => item.id === productId);
+            if (!item) return;
+            
+            item.quantity += delta;
+            
+            if (item.quantity <= 0) {
+                removeFromCart(productId);
+            } else {
+                updateCart();
+            }
+        }
+
+        // Update Cart UI
+        function updateCart() {
+            const count = cart.reduce((sum, item) => sum + item.quantity, 0);
+            const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            
+            document.getElementById('cart-count').textContent = count;
+            document.getElementById('cart-total').textContent = `CHF ${total.toFixed(2)}`;
+            
+            const cartBody = document.getElementById('cart-body');
+            
+            if (cart.length === 0) {
+                cartBody.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-shopping-cart"></i>
+                        <p id="empty-cart-text">${getEmptyCartText()}</p>
+                    </div>
+                `;
+            } else {
+                cartBody.innerHTML = cart.map(item => `
+                    <div class="cart-item">
+                        <div class="cart-item-header">
+                            <div class="cart-item-name">${item.nameDisplay || item.name}</div>
+                            <button class="cart-item-remove" onclick="removeFromCart(${item.id})">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                        <div class="cart-item-controls">
+                            <div class="cart-item-quantity">
+                                <button class="qty-btn" onclick="updateQuantity(${item.id}, -1)">−</button>
+                                <span class="qty-value">${item.quantity}</span>
+                                <button class="qty-btn" onclick="updateQuantity(${item.id}, 1)">+</button>
+                            </div>
+                            <div class="cart-item-price">CHF ${(item.price * item.quantity).toFixed(2)}</div>
+                        </div>
+                    </div>
+                `).join('');
+            }
+        }
+
+        // Toggle Cart
+        function toggleCart() {
+            const overlay = document.getElementById('cart-overlay');
+            const panel = document.getElementById('cart-panel');
+            
+            overlay.classList.toggle('active');
+            panel.classList.toggle('active');
+            
+            if (panel.classList.contains('active')) {
+                document.body.style.overflow = 'hidden';
+            } else {
+                document.body.style.overflow = '';
+            }
+        }
+
+        // Proceed to Checkout
+        function proceedToCheckout() {
+            if (cart.length === 0) {
+                alert(getEmptyCartText());
+                return;
+            }
+            
+            // Chiudi carrello
+            toggleCart();
+            
+            // Mostra checkout modal
+            setTimeout(() => {
+                showCheckout();
+            }, 300);
+        }
+
+        let selectedPayment = 'later';
+        let isGuestMode = false;
+
+        function showCheckout() {
+            // Popola riepilogo ordine
+            const summaryContainer = document.getElementById('order-items-summary');
+            summaryContainer.innerHTML = cart.map(item => `
+                <div class="summary-row">
+                    <span>${item.nameDisplay || item.name} x${item.quantity}</span>
+                    <span>CHF ${(item.price * item.quantity).toFixed(2)}</span>
+                </div>
+            `).join('');
+            
+            const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            document.getElementById('checkout-total').textContent = `CHF ${total.toFixed(2)}`;
+            
+            // Imposta data minima oggi
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('pickup-date').min = today;
+            document.getElementById('pickup-date').value = today;
+            
+            // Imposta ora default 12:00
+            document.getElementById('pickup-time').value = '12:00';
+            
+            // Mostra modal
+            document.getElementById('checkout-modal').classList.add('active');
+            document.body.style.overflow = 'hidden';
+            
+            // Update translations
+            updateCheckoutTranslations();
+        }
+
+        function closeCheckout() {
+            document.getElementById('checkout-modal').classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        function selectPayment(method) {
+            selectedPayment = method;
+            document.querySelectorAll('.payment-option').forEach(opt => opt.classList.remove('selected'));
+            document.getElementById(`payment-${method}`).classList.add('selected');
+        }
+
+        function toggleGuestMode() {
+            isGuestMode = document.getElementById('guest-mode').checked;
+            const form = document.getElementById('checkout-form');
+            const inputs = ['customer-name', 'customer-phone', 'customer-email'];
+            
+            inputs.forEach(id => {
+                const input = document.getElementById(id);
+                if (isGuestMode) {
+                    input.required = false;
+                    input.disabled = true;
+                    input.style.opacity = '0.5';
+                } else {
+                    input.required = true;
+                    input.disabled = false;
+                    input.style.opacity = '1';
+                }
+            });
+        }
+
+        async function submitOrder(event) {
+            event.preventDefault();
+            
+            // Prepara dati ordine
+            const orderData = {
+                cart: cart,
+                pickupDate: document.getElementById('pickup-date').value,
+                pickupTime: document.getElementById('pickup-time').value,
+                note: document.getElementById('special-notes').value || '',
+                paymentMethod: selectedPayment,
+                total: cart.reduce((sum, item) => sum + (item.price * item.quantity), 0),
+                customer: isGuestMode ? {
+                    guest: true,
+                    name: 'Ospite',
+                    phone: '',
+                    email: ''
+                } : {
+                    name: document.getElementById('customer-name').value,
+                    phone: document.getElementById('customer-phone').value,
+                    email: document.getElementById('customer-email').value,
+                    isVIP: false
+                }
+            };
+            
+            console.log('📦 Invio ordine:', orderData);
+            
+            // Disabilita bottone
+            const submitBtn = document.getElementById('submit-order-btn');
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Invio...';
+            
+            try {
+                const response = await fetch(`${CONFIG.API_URL}?action=creaOrdine`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'text/plain',
+                    },
+                    body: JSON.stringify(orderData)
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    console.log('✅ Ordine creato:', result.orderId);
+                    
+                    // Mostra conferma
+                    alert(`✅ Ordine #${result.orderId} confermato!\n\nRitiro: ${orderData.pickupDate} alle ${orderData.pickupTime}`);
+                    
+                    // Reset
+                    cart = [];
+                    updateCart();
+                    closeCheckout();
+                    document.getElementById('checkout-form').reset();
+                    document.getElementById('guest-mode').checked = false;
+                    isGuestMode = false;
+                    toggleGuestMode();
+                    
+                } else {
+                    alert('❌ Errore: ' + (result.error || 'Riprova'));
+                }
+            } catch (error) {
+                console.error('❌ Errore invio:', error);
+                alert('❌ Errore di connessione. Riprova.');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = `<i class="fas fa-paper-plane"></i> ${getSubmitOrderText()}`;
+            }
+        }
+
+        function updateCheckoutTranslations() {
+            const translations = {
+                it: {
+                    checkoutTitle: 'Completa Ordine',
+                    summaryTitle: 'Riepilogo Ordine',
+                    totalLabel: 'Totale:',
+                    guestMode: 'Ordina come Ospite (senza dati)',
+                    nameLabel: 'Nome:',
+                    phoneLabel: 'Telefono:',
+                    emailLabel: 'Email:',
+                    pickupDateLabel: 'Data Ritiro:',
+                    pickupTimeLabel: 'Orario Ritiro:',
+                    notesLabel: 'Note Speciali (opzionale):',
+                    paymentLabel: 'Metodo di Pagamento:',
+                    paymentLater: 'Al Ritiro',
+                    paymentNow: 'Online',
+                    submitOrder: 'Invia Ordine'
+                },
+                de: {
+                    checkoutTitle: 'Bestellung abschließen',
+                    summaryTitle: 'Bestellübersicht',
+                    totalLabel: 'Gesamt:',
+                    guestMode: 'Als Gast bestellen (ohne Daten)',
+                    nameLabel: 'Name:',
+                    phoneLabel: 'Telefon:',
+                    emailLabel: 'E-Mail:',
+                    pickupDateLabel: 'Abholdatum:',
+                    pickupTimeLabel: 'Abholzeit:',
+                    notesLabel: 'Besondere Wünsche (optional):',
+                    paymentLabel: 'Zahlungsmethode:',
+                    paymentLater: 'Bei Abholung',
+                    paymentNow: 'Online',
+                    submitOrder: 'Bestellung senden'
+                },
+                fr: {
+                    checkoutTitle: 'Finaliser la Commande',
+                    summaryTitle: 'Récapitulatif',
+                    totalLabel: 'Total:',
+                    guestMode: 'Commander en tant qu\'Invité (sans données)',
+                    nameLabel: 'Nom:',
+                    phoneLabel: 'Téléphone:',
+                    emailLabel: 'Email:',
+                    pickupDateLabel: 'Date de Retrait:',
+                    pickupTimeLabel: 'Heure de Retrait:',
+                    notesLabel: 'Notes Spéciales (optionnel):',
+                    paymentLabel: 'Méthode de Paiement:',
+                    paymentLater: 'Au Retrait',
+                    paymentNow: 'En Ligne',
+                    submitOrder: 'Envoyer la Commande'
+                }
+            };
+            
+            const t = translations[currentLang];
+            
+            // Helper per update sicuro
+            const updateText = (id, text) => {
+                const el = document.getElementById(id);
+                if (el) el.textContent = text;
+            };
+            
+            updateText('checkout-title', t.checkoutTitle);
+            updateText('summary-title', t.summaryTitle);
+            updateText('total-label-checkout', t.totalLabel);
+            updateText('guest-mode-label', t.guestMode);
+            updateText('name-label', t.nameLabel);
+            updateText('phone-label', t.phoneLabel);
+            updateText('email-label', t.emailLabel);
+            updateText('pickup-date-label', t.pickupDateLabel);
+            updateText('pickup-time-label', t.pickupTimeLabel);
+            updateText('notes-label', t.notesLabel);
+            updateText('payment-label', t.paymentLabel);
+            updateText('payment-later-text', t.paymentLater);
+            updateText('payment-now-text', t.paymentNow);
+            updateText('submit-order-text', t.submitOrder);
+        }
+
+        function getSubmitOrderText() {
+            return {
+                it: 'Invia Ordine',
+                de: 'Bestellung senden',
+                fr: 'Envoyer la Commande'
+            }[currentLang];
+        }
+
+        // Switch Language
+        function switchLang(lang) {
+            currentLang = lang;
+            document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            // Reload displays
+            displayTodayProducts();
+            displayWeekMenu();
+            loadRecipeOfWeek();
+            updateCart();
+            updateCheckoutTranslations();
+        }
+
+        // Helper: Get Name
+        function getName(product) {
+            if (typeof product.nome === 'object' && product.nome[currentLang]) {
+                return product.nome[currentLang];
+            }
+            return typeof product.nome === 'string' ? product.nome : 'Prodotto';
+        }
+
+        // Helper: Get Description
+        function getDescription(product) {
+            if (typeof product.descrizione === 'object' && product.descrizione[currentLang]) {
+                return product.descrizione[currentLang];
+            }
+            return typeof product.descrizione === 'string' ? product.descrizione : '';
+        }
+
+        // Helper: Get Add Text
+        function getAddText() {
+            return {
+                it: 'Aggiungi',
+                de: 'Hinzufügen',
+                fr: 'Ajouter'
+            }[currentLang];
+        }
+
+        // Helper: Get Empty Cart Text
+        function getEmptyCartText() {
+            return {
+                it: 'Il carrello è vuoto',
+                de: 'Der Warenkorb ist leer',
+                fr: 'Le panier est vide'
+            }[currentLang];
+        }
+    </script>
+
+</body>
+</html>
